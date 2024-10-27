@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Usuario {
+  cedula            Int      @id
+  nombre_completo   String
+  correo_electronico String
+  contrasena        String
+  rol               String   @db.Char(1)  // P=Paciente, M=Médico, A=Administrador
+  solicitudesRealizadas SolicitudSoporte[] @relation("Solicita")
+  solicitudesAtendidas  SolicitudSoporte[] @relation("Atiende")
+  diagnosticosAsociados Diagnostico[]      @relation("DiagnosticoMedico")
+  diagnosticosRecibidos Diagnostico[]      @relation("DiagnosticoPaciente")
+}
+
+model Diagnostico {
+  id               Int       @id @default(autoincrement())
+  shareLink        String?   @db.VarChar(255)
+  enlaceFoto       String    @db.VarChar(255)
+  fecha            DateTime
+  calificacion     Int?
+  enlaceVideo      String    @db.VarChar(255)
+  descripcion      String    @db.VarChar(255)
+  edadGestacional  String    @db.VarChar(255)
+  medico          Usuario   @relation("DiagnosticoMedico", fields: [medicoId], references: [cedula])
+  medicoId        Int
+  paciente        Usuario   @relation("DiagnosticoPaciente", fields: [pacienteId], references: [cedula])
+  pacienteId      Int
+}
+
+model SolicitudSoporte {
+  id            String   @id @default(uuid())
+  titulo        String   @db.VarChar(100)
+  fecha         DateTime
+  tipo          String   @db.Char(1)
+  descripcion   String   @db.VarChar(255)
+  solicitante   Usuario  @relation("Solicita", fields: [solicitanteId], references: [cedula])
+  solicitanteId Int
+  encargado     Usuario? @relation("Atiende", fields: [encargadoId], references: [cedula])
+  encargadoId   Int?
+  mensajes      Mensaje[]
+}
+
+model Mensaje {
+  id                String           @id @default(uuid())
+  descripcion       String           @db.VarChar(255)
+  fecha            DateTime
+  solicitudSoporte SolicitudSoporte @relation(fields: [solicitudId], references: [id])
+  solicitudId      String
+}
