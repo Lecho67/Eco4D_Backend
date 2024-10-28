@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsNumber()
@@ -20,5 +20,7 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(1)
+  @IsIn(['P','M','A'], { message: 'the rol has to be P, M or A in uppercase' })
   rol: string;
 }

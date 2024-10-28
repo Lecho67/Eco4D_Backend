@@ -38,6 +38,8 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MaxLength)(1),
+    (0, class_validator_1.IsIn)(['P', 'M', 'A'], { message: 'the rol has to be P, M or A in uppercase' }),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "rol", void 0);
 //# sourceMappingURL=register.dto.js.map

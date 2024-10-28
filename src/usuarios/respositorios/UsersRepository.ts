@@ -19,7 +19,7 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async create(user: Partial<Usuario>): Promise<Usuario> {
+  async create(user: Usuario): Promise<Usuario> {
     return this.prisma.usuario.create({
       data: user as any, // El 'as any' es necesario debido a la estructura de Prisma
     });
