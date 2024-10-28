@@ -9,26 +9,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsuariosController = void 0;
+exports.UsuariosService = void 0;
 const common_1 = require("@nestjs/common");
-const usuarios_service_1 = require("./usuarios.service");
-let UsuariosController = class UsuariosController {
-    constructor(usuariosService) {
-        this.usuariosService = usuariosService;
+const prisma_service_1 = require("../prisma.service");
+let UsuariosService = class UsuariosService {
+    constructor(prisma) {
+        this.prisma = prisma;
     }
     getUsers() {
-        return this.usuariosService.getUsers();
+        return this.prisma.usuario.findMany();
     }
 };
-exports.UsuariosController = UsuariosController;
-__decorate([
-    (0, common_1.Get)('/'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Object)
-], UsuariosController.prototype, "getUsers", null);
-exports.UsuariosController = UsuariosController = __decorate([
-    (0, common_1.Controller)('usuarios'),
-    __metadata("design:paramtypes", [usuarios_service_1.UsuariosService])
-], UsuariosController);
-//# sourceMappingURL=usuarios.controller.js.map
+exports.UsuariosService = UsuariosService;
+exports.UsuariosService = UsuariosService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+], UsuariosService);
+//# sourceMappingURL=usuarios.service.js.map

@@ -9,12 +9,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuariosModule = void 0;
 const common_1 = require("@nestjs/common");
 const usuarios_controller_1 = require("./usuarios.controller");
+const usuarios_service_1 = require("./usuarios.service");
+const prisma_service_1 = require("../prisma.service");
+const UsersRepository_1 = require("./respositorios/UsersRepository");
 let UsuariosModule = class UsuariosModule {
 };
 exports.UsuariosModule = UsuariosModule;
 exports.UsuariosModule = UsuariosModule = __decorate([
     (0, common_1.Module)({
-        controllers: [usuarios_controller_1.UsuariosController]
+        controllers: [usuarios_controller_1.UsuariosController],
+        providers: [usuarios_service_1.UsuariosService, prisma_service_1.PrismaService, UsersRepository_1.UserRepository],
+        exports: [UsersRepository_1.UserRepository]
     })
 ], UsuariosModule);
 //# sourceMappingURL=usuarios.module.js.map

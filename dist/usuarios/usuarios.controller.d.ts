@@ -1,3 +1,6 @@
+import { UsuariosService } from './usuarios.service';
 export declare class UsuariosController {
-    getHello(): string;
+    private readonly usuariosService;
+    constructor(usuariosService: UsuariosService);
+    getUsers(): any;
 }
