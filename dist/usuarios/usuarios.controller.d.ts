@@ -3,4 +3,5 @@ export declare class UsuariosController {
     private readonly usuariosService;
     constructor(usuariosService: UsuariosService);
     getUsers(): any;
+    getAdminThings(): string;
 }

@@ -5,11 +5,12 @@ import { SoporteModule } from './soporte/soporte.module';
 import { MensajesModule } from './mensajes/mensajes.module';
 import { PrismaService } from './prisma.service';
 import { AuthModule } from './auth/auth.module';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Module({
   imports: [UsuariosModule, DiagnosticosModule, SoporteModule, MensajesModule, AuthModule],
   controllers: [],
-  providers: [PrismaService],
+  providers: [PrismaService,JwtService],
 })
 export class AppModule {}

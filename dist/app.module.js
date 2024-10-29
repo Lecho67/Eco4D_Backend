@@ -14,6 +14,7 @@ const soporte_module_1 = require("./soporte/soporte.module");
 const mensajes_module_1 = require("./mensajes/mensajes.module");
 const prisma_service_1 = require("./prisma.service");
 const auth_module_1 = require("./auth/auth.module");
+const jwt_1 = require("@nestjs/jwt");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -21,7 +22,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [usuarios_module_1.UsuariosModule, diagnosticos_module_1.DiagnosticosModule, soporte_module_1.SoporteModule, mensajes_module_1.MensajesModule, auth_module_1.AuthModule],
         controllers: [],
-        providers: [prisma_service_1.PrismaService],
+        providers: [prisma_service_1.PrismaService, jwt_1.JwtService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

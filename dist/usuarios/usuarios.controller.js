@@ -12,12 +12,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuariosController = void 0;
 const common_1 = require("@nestjs/common");
 const usuarios_service_1 = require("./usuarios.service");
+const roles_decorator_1 = require("./roles/roles.decorator");
+const roles_enum_1 = require("./roles/roles.enum");
+const roles_guard_1 = require("./roles/roles.guard");
+const auth_guard_1 = require("../auth/auth.guard");
 let UsuariosController = class UsuariosController {
     constructor(usuariosService) {
         this.usuariosService = usuariosService;
     }
     getUsers() {
         return this.usuariosService.getUsers();
+    }
+    getAdminThings() {
+        return 'AdminThings';
     }
 };
 exports.UsuariosController = UsuariosController;
@@ -27,6 +34,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Object)
 ], UsuariosController.prototype, "getUsers", null);
+__decorate([
+    (0, common_1.Get)('/admin'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(roles_enum_1.Role.Administrador),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", String)
+], UsuariosController.prototype, "getAdminThings", null);
 exports.UsuariosController = UsuariosController = __decorate([
     (0, common_1.Controller)('usuarios'),
     __metadata("design:paramtypes", [usuarios_service_1.UsuariosService])
