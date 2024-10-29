@@ -19,25 +19,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const tokenRole = request.headers['authorization']?.split(' ')[1];
-
-    if (!tokenRole) {
-      return false;
-    }
-
-    try{
-      const payload = this.jwtService.verify<JwtService>(
-        tokenRole,
-        {
-          secret: process.env.JWT_SECRET
-        }
-      );
-
-      request['user'] = payload;
-    }catch(e){
-      return false;
-    }
-
+    
     if (role[0] !== request.user.rol) {
       throw new UnauthorizedException('No tienes permiso para acceder a este recurso');
     }
