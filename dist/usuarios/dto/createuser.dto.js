@@ -9,29 +9,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LoginDto = void 0;
+exports.CreateUserDto = void 0;
 const class_validator_1 = require("class-validator");
-const swagger_1 = require("@nestjs/swagger");
-class LoginDto {
+class CreateUserDto {
 }
-exports.LoginDto = LoginDto;
+exports.CreateUserDto = CreateUserDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        example: 'johndoe@example.com',
-        description: 'Correo electrónico del usuario para iniciar sesión',
-    }),
-    (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], LoginDto.prototype, "correo_electronico", void 0);
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateUserDto.prototype, "cedula", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        example: 'password123',
-        description: 'Contraseña del usuario, debe tener al menos 6 caracteres',
-    }),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "nombre_completo", void 0);
+__decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "correo_electronico", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(6),
     __metadata("design:type", String)
-], LoginDto.prototype, "contrasena", void 0);
-//# sourceMappingURL=login.dto.js.map
+], CreateUserDto.prototype, "contrasena", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "rol", void 0);
+//# sourceMappingURL=createuser.dto.js.map

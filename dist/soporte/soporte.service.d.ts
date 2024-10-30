@@ -9,12 +9,12 @@ export declare class SoporteService {
             correo_electronico: string;
         };
     } & {
-        titulo: string;
-        tipo: string;
-        descripcion: string;
         id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
+        descripcion: string;
         estado: string;
         solicitanteId: number;
         encargadoId: number | null;
@@ -27,12 +27,12 @@ export declare class SoporteService {
             nombre_completo: string;
         };
     } & {
-        titulo: string;
-        tipo: string;
-        descripcion: string;
         id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
+        descripcion: string;
         estado: string;
         solicitanteId: number;
         encargadoId: number | null;
@@ -43,12 +43,12 @@ export declare class SoporteService {
             correo_electronico: string;
         };
     } & {
-        titulo: string;
-        tipo: string;
-        descripcion: string;
         id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
+        descripcion: string;
         estado: string;
         solicitanteId: number;
         encargadoId: number | null;

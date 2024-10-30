@@ -17,14 +17,11 @@ let SolicitudRepository = class SolicitudRepository {
         this.prisma = prisma;
     }
     async create(createSolicitudDto, solicitanteId) {
-        const { titulo, tipo, descripcion } = createSolicitudDto;
         return this.prisma.solicitudSoporte.create({
             data: {
-                titulo,
-                tipo,
-                descripcion,
-                solicitanteId,
+                ...createSolicitudDto,
                 estado: 'A',
+                solicitanteId,
             },
             include: {
                 solicitante: {

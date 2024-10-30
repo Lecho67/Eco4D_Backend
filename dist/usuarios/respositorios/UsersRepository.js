@@ -27,6 +27,12 @@ let UserRepository = class UserRepository {
         });
     }
     async create(user) {
+        const existingUser = await this.prisma.usuario.findUnique({
+            where: { cedula: user.cedula },
+        });
+        if (existingUser) {
+            throw new common_1.ConflictException(`La cédula ${user.cedula} ya está en uso.`);
+        }
         return this.prisma.usuario.create({
             data: user,
         });

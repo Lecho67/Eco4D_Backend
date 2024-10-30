@@ -22,5 +22,4 @@ export declare class AuthController {
         };
         token: string;
     }>;
-    profile(): Promise<string>;
 }

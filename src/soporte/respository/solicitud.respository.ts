@@ -7,14 +7,11 @@ export class SolicitudRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(createSolicitudDto: CreateSolicitudDto, solicitanteId: number) {
-    const { titulo, tipo, descripcion } = createSolicitudDto;
     return this.prisma.solicitudSoporte.create({
       data: {
-        titulo,
-        tipo,
-        descripcion,
+        ...createSolicitudDto,
+        estado: 'A',
         solicitanteId,
-        estado: 'A', // Valor por defecto
       },
       include: {
         solicitante: {

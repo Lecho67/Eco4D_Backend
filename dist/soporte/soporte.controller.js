@@ -20,6 +20,7 @@ const auth_guard_1 = require("../auth/auth.guard");
 const roles_guard_1 = require("../usuarios/roles/roles.guard");
 const roles_decorator_1 = require("../usuarios/roles/roles.decorator");
 const roles_enum_1 = require("../usuarios/roles/roles.enum");
+const swagger_1 = require("@nestjs/swagger");
 let SoporteController = class SoporteController {
     constructor(solicitudService) {
         this.solicitudService = solicitudService;
@@ -38,6 +39,29 @@ exports.SoporteController = SoporteController;
 __decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.Paciente),
+    (0, swagger_1.ApiOperation)({ summary: 'Crear una nueva solicitud de soporte' }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: 'Solicitud creada con éxito',
+        schema: {
+            example: {
+                id: "39f270d7-da7b-4025-89de-1037a29915a6",
+                titulo: "Problema con el sistema",
+                fechaReporte: "2024-10-30T18:04:32.265Z",
+                fechaSolucion: null,
+                tipo: "fallas tecnicas",
+                descripcion: "No puedo acceder a mis diagnósticos",
+                estado: "A",
+                solicitanteId: 12345678,
+                encargadoId: null,
+                solicitante: {
+                    nombre_completo: "John Doe",
+                    correo_electronico: "johndoe@example.com"
+                }
+            }
+        }
+    }),
+    (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -47,6 +71,31 @@ __decorate([
 __decorate([
     (0, common_1.Get)('mis-solicitudes'),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.Paciente),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener solicitudes de soporte del paciente actual' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Lista de solicitudes del paciente',
+        schema: {
+            example: [
+                {
+                    id: "39f270d7-da7b-4025-89de-1037a29915a6",
+                    titulo: "Problema con el sistema",
+                    fechaReporte: "2024-10-30T18:04:32.265Z",
+                    fechaSolucion: null,
+                    tipo: "fallas tecnicas",
+                    descripcion: "No puedo acceder a mis diagnósticos",
+                    estado: "A",
+                    solicitanteId: 12345678,
+                    encargadoId: null,
+                    solicitante: {
+                        nombre_completo: "John Doe"
+                    },
+                    encargado: null
+                }
+            ]
+        }
+    }),
+    (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -55,6 +104,25 @@ __decorate([
 __decorate([
     (0, common_1.Get)('solicitudes-abiertas'),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.Administrador),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener todas las solicitudes abiertas' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Lista de solicitudes abiertas',
+        schema: {
+            example: [
+                {
+                    id: 2,
+                    titulo: 'Inconsistencia de datos',
+                    tipo: 'inconsistencia de datos',
+                    descripcion: 'Datos erróneos en el perfil del usuario',
+                    fechaReporte: '2024-10-30T10:00:00Z',
+                    solicitante: { nombre_completo: 'Maria López', correo_electronico: 'maria.lopez@example.com' },
+                    estado: 'A',
+                }
+            ]
+        }
+    }),
+    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

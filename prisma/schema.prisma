@@ -54,7 +54,7 @@ model SolicitudSoporte {
   titulo        String    @db.VarChar(100)
   fechaReporte  DateTime  @default(now())
   fechaSolucion DateTime?
-  tipo          String    @db.Char(1)  // T=Técnico, F=Funcional, O=Otro
+  tipo          String    @db.VarChar(255)  // T=Técnico, F=Funcional, O=Otro
   descripcion   String    @db.Text
   estado        String    @default("A") // A=abierta, R=resuelta
   // Relaciones

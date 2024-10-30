@@ -17,7 +17,7 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const register_dto_1 = require("./dto/register.dto");
-const auth_guard_1 = require("./auth.guard");
+const swagger_1 = require("@nestjs/swagger");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -28,14 +28,30 @@ let AuthController = class AuthController {
     async login(loginDto) {
         return this.authService.login(loginDto);
     }
-    async profile() {
-        return 'Entraste correctamente al perfil';
-    }
 };
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('register'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, swagger_1.ApiOperation)({ summary: 'Registro de un nuevo usuario' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CREATED,
+        description: 'El usuario ha sido registrado exitosamente.',
+        example: {
+            user: {
+                cedula: 12345678,
+                nombre_completo: 'John Doe',
+                correo_electronico: 'johndoe@example.com',
+                rol: 'P',
+            },
+            token: 'jwt_token_example',
+        },
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'El usuario ya existe.',
+    }),
+    (0, swagger_1.ApiBody)({ type: register_dto_1.RegisterDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
@@ -44,19 +60,33 @@ __decorate([
 __decorate([
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Inicio de sesión de usuario' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Inicio de sesión exitoso. Devuelve el usuario y el token.',
+        example: {
+            user: {
+                cedula: '12345678',
+                nombre_completo: 'John Doe',
+                correo_electronico: 'johndoe@example.com',
+                rol: 'P'
+            },
+            token: 'jwt_token_example',
+        },
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Credenciales inválidas.',
+    }),
+    (0, swagger_1.ApiBody)({
+        type: login_dto_1.LoginDto,
+        description: 'Cuerpo de la solicitud para el inicio de sesión',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
-__decorate([
-    (0, common_1.Get)('profile'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "profile", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
