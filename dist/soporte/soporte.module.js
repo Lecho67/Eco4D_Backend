@@ -9,12 +9,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SoporteModule = void 0;
 const common_1 = require("@nestjs/common");
 const soporte_controller_1 = require("./soporte.controller");
+const soporte_service_1 = require("./soporte.service");
+const solicitud_respository_1 = require("./respository/solicitud.respository");
+const prisma_service_1 = require("../prisma.service");
+const auth_module_1 = require("../auth/auth.module");
+const jwt_1 = require("@nestjs/jwt");
 let SoporteModule = class SoporteModule {
 };
 exports.SoporteModule = SoporteModule;
 exports.SoporteModule = SoporteModule = __decorate([
     (0, common_1.Module)({
-        controllers: [soporte_controller_1.SoporteController]
+        imports: [auth_module_1.AuthModule],
+        controllers: [soporte_controller_1.SoporteController],
+        providers: [soporte_service_1.SoporteService, solicitud_respository_1.SolicitudRepository, prisma_service_1.PrismaService, jwt_1.JwtService]
     })
 ], SoporteModule);
 //# sourceMappingURL=soporte.module.js.map

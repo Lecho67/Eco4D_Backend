@@ -1,9 +1,9 @@
-import { SoporteService } from './soporte.service';
-import { CreateSolicitudDto } from './dto/create-solicitud.dto';
-export declare class SoporteController {
-    private readonly solicitudService;
-    constructor(solicitudService: SoporteService);
-    createSolicitud(createSolicitudDto: CreateSolicitudDto, req: any): Promise<{
+import { PrismaService } from 'src/prisma.service';
+import { CreateSolicitudDto } from '../dto/create-solicitud.dto';
+export declare class SolicitudRepository {
+    private prisma;
+    constructor(prisma: PrismaService);
+    create(createSolicitudDto: CreateSolicitudDto, solicitanteId: number): Promise<{
         solicitante: {
             nombre_completo: string;
             correo_electronico: string;
@@ -19,7 +19,7 @@ export declare class SoporteController {
         solicitanteId: number;
         encargadoId: number | null;
     }>;
-    getMisSolicitudes(req: any): Promise<({
+    findAllByPaciente(pacienteId: number): Promise<({
         solicitante: {
             nombre_completo: string;
         };
@@ -37,7 +37,7 @@ export declare class SoporteController {
         solicitanteId: number;
         encargadoId: number | null;
     })[]>;
-    getOpenSolicitudes(): Promise<({
+    findAllOpenSolicitudes(): Promise<({
         solicitante: {
             nombre_completo: string;
             correo_electronico: string;
