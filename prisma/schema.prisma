@@ -22,7 +22,6 @@ model Usuario {
   rol                   String   @db.Char(1)  // P=Paciente, M=Médico, A=Administrador
   // Relaciones para solicitudes de soporte
   solicitudesRealizadas SolicitudSoporte[] @relation("Solicita")
-  solicitudesAtendidas  SolicitudSoporte[] @relation("Atiende")
   // Relaciones para diagnósticos - solo una será usada según el rol
   diagnosticosComoMedico    Diagnostico[] @relation("DiagnosticoMedico")
   diagnosticosComoPaciente  Diagnostico[] @relation("DiagnosticoPaciente") 
@@ -60,12 +59,9 @@ model SolicitudSoporte {
   // Relaciones
   solicitante   Usuario   @relation("Solicita", fields: [solicitanteId], references: [cedula])
   solicitanteId Int
-  encargado     Usuario?  @relation("Atiende", fields: [encargadoId], references: [cedula])
-  encargadoId   Int?
   mensajes      Mensaje[]
 
   @@index([solicitanteId])
-  @@index([encargadoId])
 }
 
 model Mensaje {
