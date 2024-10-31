@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Usuario {
+  cedula                Int      @id
+  nombre_completo       String
+  correo_electronico    String   @unique
+  contrasena            String
+  rol                   String   @db.Char(1)  // P=Paciente, M=Médico, A=Administrador
+  // Relaciones para solicitudes de soporte
+  solicitudesRealizadas SolicitudSoporte[] @relation("Solicita")
+  solicitudesAtendidas  SolicitudSoporte[] @relation("Atiende")
+  // Relaciones para diagnósticos - solo una será usada según el rol
+  diagnosticosComoMedico    Diagnostico[] @relation("DiagnosticoMedico")
+  diagnosticosComoPaciente  Diagnostico[] @relation("DiagnosticoPaciente") 
+  // Relaciones para mensajes
+  mensajesEnviados     Mensaje[]    @relation("EnviaMensaje")
+}
+
+model Diagnostico {
+  id               Int       @id @default(autoincrement())
+  shareLink        String?   @db.VarChar(255)
+  enlaceFoto       String    @db.VarChar(255)
+  fecha            DateTime  @default(now())
+  calificacion     Int?
+  enlaceVideo      String    @db.VarChar(255)
+  descripcion      String    @db.Text
+  edadGestacional  String    @db.VarChar(255)
+  // Relaciones
+  medico           Usuario   @relation("DiagnosticoMedico", fields: [medicoId], references: [cedula])
+  medicoId         Int
+  paciente         Usuario   @relation("DiagnosticoPaciente", fields: [pacienteId], references: [cedula])
+  pacienteId       Int
+
+  @@index([medicoId])
+  @@index([pacienteId])
+}
+
+model SolicitudSoporte {
+  id            String    @id @default(uuid())
+  titulo        String    @db.VarChar(100)
+  fechaReporte  DateTime  @default(now())
+  fechaSolucion DateTime?
+  tipo          String    @db.VarChar(255)  // T=Técnico, F=Funcional, O=Otro
+  descripcion   String    @db.Text
+  estado        String    @default("A") // A=abierta, R=resuelta
+  // Relaciones
+  solicitante   Usuario   @relation("Solicita", fields: [solicitanteId], references: [cedula])
+  solicitanteId Int
+  encargado     Usuario?  @relation("Atiende", fields: [encargadoId], references: [cedula])
+  encargadoId   Int?
+  mensajes      Mensaje[]
+
+  @@index([solicitanteId])
+  @@index([encargadoId])
+}
+
+model Mensaje {
+  id                String           @id @default(uuid())
+  descripcion       String           @db.Text
+  fecha             DateTime         @default(now())
+  // Relaciones
+  solicitudSoporte  SolicitudSoporte @relation(fields: [solicitudId], references: [id])
+  solicitudId       String
+  autor             Usuario          @relation("EnviaMensaje", fields: [autorId], references: [cedula])
+  autorId           Int
+
+  @@index([solicitudId])
+  @@index([autorId])
+}
