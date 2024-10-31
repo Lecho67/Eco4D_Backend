@@ -28,7 +28,6 @@ export class SoporteController {
         descripcion: "No puedo acceder a mis diagnósticos",
         estado: "A",
         solicitanteId: 12345678,
-        encargadoId: null,
         solicitante: {
           nombre_completo: "John Doe",
           correo_electronico: "johndoe@example.com"
@@ -65,11 +64,9 @@ export class SoporteController {
           descripcion: "No puedo acceder a mis diagnósticos",
           estado: "A",
           solicitanteId: 12345678,
-          encargadoId: null,
           solicitante: {
             nombre_completo: "John Doe"
-          },
-          encargado: null
+          }
         }
       ]
     }

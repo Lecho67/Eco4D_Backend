@@ -34,11 +34,6 @@ export class SolicitudRepository {
           select: {
             nombre_completo: true,
           }
-        },
-        encargado: {
-          select: {
-            nombre_completo: true,
-          }
         }
       },
       orderBy: {
