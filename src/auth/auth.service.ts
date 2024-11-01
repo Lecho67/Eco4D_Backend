@@ -30,7 +30,7 @@ export class AuthService {
     // Crear usuario
     const user = await this.userRepository.create({
       ...rest,
-      contrasena: hashedPassword,
+      contrasena: hashedPassword
     });
 
     // Generar token
@@ -38,7 +38,7 @@ export class AuthService {
 
     return {
       user: {
-        cedula: user.cedula,
+        cedula: user.identificacion,
         nombre_completo: user.nombre_completo,
         correo_electronico: user.correo_electronico,
         rol: user.rol,
@@ -69,7 +69,7 @@ export class AuthService {
 
     return {
       user: {
-        cedula: user.cedula,
+        cedula: user.identificacion,
         nombre_completo: user.nombre_completo,
         correo_electronico: user.correo_electronico,
         rol: user.rol,
@@ -80,7 +80,7 @@ export class AuthService {
 
   private async generateToken(user: Usuario) {
     const payload: JwtPayload = {
-      sub: user.cedula,
+      sub: user.identificacion,
       email: user.correo_electronico,
       rol: user.rol,
     };
