@@ -1,6 +1,6 @@
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength, IsDate,IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-
+import { Type } from 'class-transformer';
 export class RegisterDto {
   @ApiProperty({
     example: 12345678,
@@ -8,7 +8,16 @@ export class RegisterDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  cedula: number;
+  identificacion: number;
+
+  @ApiProperty({
+    example: 'CC',
+    description: 'Tipo de identificación del usuario: CC, TI, CE',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['CC', 'TI', 'CE'])
+  tipoIdentificacion: string;
 
   @ApiProperty({
     example: 'John Doe',
@@ -37,12 +46,38 @@ export class RegisterDto {
 
   @ApiProperty({
     example: 'P',
-    description: "Rol del usuario: 'P' para paciente, 'M' para medico, o 'A' para administrador",
+    description: "Rol del usuario: 'P' para paciente, 'M' para médico, 'A' para administrador",
     maxLength: 1,
   })
   @IsString()
-  @IsNotEmpty()
   @MaxLength(1)
-  @IsIn(['P', 'M', 'A'], { message: 'the rol has to be P, M or A in uppercase' })
-  rol: string;
+  @IsOptional()
+
+  @IsIn(['P', 'M', 'A'], { message: 'El rol debe ser P, M o A en mayúsculas' })
+  rol?: string;
+
+  @ApiProperty({
+    example: 'Colombia',
+    description: 'País de residencia del usuario',
+  })
+  @IsString()
+  @IsNotEmpty()
+  pais: string;
+
+  @ApiProperty({
+    example: 'Bogotá',
+    description: 'Ciudad de residencia del usuario',
+  })
+  @IsString()
+  @IsNotEmpty()
+  ciudad: string;
+
+  @ApiProperty({
+    example: '1990-01-01',
+    description: 'Fecha de nacimiento del usuario',
+  })
+  @IsDate()
+  @IsNotEmpty()
+  @Type(()=>Date)
+  fecha_nacimiento: Date;
 }

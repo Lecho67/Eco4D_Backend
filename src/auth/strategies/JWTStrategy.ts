@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     return {
             nombre: user.nombre_completo,
-            cedula: user.cedula,
+            cedula: user.identificacion,
             correo_electronico: user.correo_electronico,
             rol
           };

@@ -15,11 +15,15 @@ datasource db {
 
 
 model Usuario {
-  cedula                Int      @id
+  identificacion        Int      @id
+  tipoIdentificacion    String
   nombre_completo       String
   correo_electronico    String   @unique
   contrasena            String
-  rol                   String   @db.Char(1)  // P=Paciente, M=Médico, A=Administrador
+  rol                   String   @db.Char(1) @default("P") // P=Paciente, M=Médico, A=Administrador
+  pais                  String
+  ciudad                String
+  fecha_nacimiento       DateTime @db.Date 
   // Relaciones para solicitudes de soporte
   solicitudesRealizadas SolicitudSoporte[] @relation("Solicita")
   // Relaciones para diagnósticos - solo una será usada según el rol
@@ -39,9 +43,9 @@ model Diagnostico {
   descripcion      String    @db.Text
   edadGestacional  String    @db.VarChar(255)
   // Relaciones
-  medico           Usuario   @relation("DiagnosticoMedico", fields: [medicoId], references: [cedula])
+  medico           Usuario   @relation("DiagnosticoMedico", fields: [medicoId], references: [identificacion])
   medicoId         Int
-  paciente         Usuario   @relation("DiagnosticoPaciente", fields: [pacienteId], references: [cedula])
+  paciente         Usuario   @relation("DiagnosticoPaciente", fields: [pacienteId], references: [identificacion])
   pacienteId       Int
 
   @@index([medicoId])
@@ -57,7 +61,7 @@ model SolicitudSoporte {
   descripcion   String    @db.Text
   estado        String    @default("A") // A=abierta, R=resuelta
   // Relaciones
-  solicitante   Usuario   @relation("Solicita", fields: [solicitanteId], references: [cedula])
+  solicitante   Usuario   @relation("Solicita", fields: [solicitanteId], references: [identificacion])
   solicitanteId Int
   mensajes      Mensaje[]
 
@@ -71,7 +75,7 @@ model Mensaje {
   // Relaciones
   solicitudSoporte  SolicitudSoporte @relation(fields: [solicitudId], references: [id])
   solicitudId       String
-  autor             Usuario          @relation("EnviaMensaje", fields: [autorId], references: [cedula])
+  autor             Usuario          @relation("EnviaMensaje", fields: [autorId], references: [identificacion])
   autorId           Int
 
   @@index([solicitudId])
