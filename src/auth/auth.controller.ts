@@ -16,7 +16,7 @@ export class AuthController {
     description: 'El usuario ha sido registrado exitosamente.',
     example: {
       user: {
-        cedula: 12345678,
+        identificacion: 12345678,
         nombre_completo: 'John Doe',
         correo_electronico: 'johndoe@example.com',
         rol: 'P',
@@ -42,7 +42,7 @@ export class AuthController {
     description: 'Inicio de sesión exitoso. Devuelve el usuario y el token.',
     example: {
       user: {
-        cedula: '12345678',
+        identificacion: '12345678',
         nombre_completo: 'John Doe',
         correo_electronico: 'johndoe@example.com',
         rol: 'P'

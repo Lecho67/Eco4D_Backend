@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
 
       // Agregar el payload decodificado a la request
       request['user'] = {
-        cedula: payload.sub,
+        identificacion: payload.sub,
         correo_electronico: payload.email,
         rol: payload.rol
       };
