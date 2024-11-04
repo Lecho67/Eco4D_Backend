@@ -60,4 +60,20 @@ export class SolicitudRepository {
       }
     });
   }
+
+  async findById(id: number) {
+    return this.prisma.solicitudSoporte.findUnique({
+      where: { id },
+      include: {
+        solicitante: {
+          select: {
+            nombre_completo: true,
+            correo_electronico: true
+          }
+        }
+      }
+    });
+
+  }
+
 }

@@ -42,7 +42,7 @@ export class AzureBlobService {
     );
 
     const startsOn = new Date();
-    const expiresOn = new Date(new Date().valueOf() + 3600 * 1000); // URL válida por 1 hora
+    const expiresOn = new Date(new Date().valueOf() + 86400 * 1000 * 10); // URL válida por 1 hora
 
     const sasOptions = {
       containerName: this.containerName,

@@ -1,5 +1,5 @@
 // src/modules/solicitudes/controllers/solicitud.controller.ts
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Request, Param, ParseIntPipe } from '@nestjs/common';
 import { SoporteService } from './soporte.service';
 import { CreateSolicitudDto } from './dto/create-solicitud.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -42,7 +42,7 @@ export class SoporteController {
   ) {
     return this.solicitudService.createSolicitud(
       createSolicitudDto,
-      req.user.cedula,
+      req.user.identificacion,
     );
   }
 
@@ -73,7 +73,7 @@ export class SoporteController {
   })
   @ApiBearerAuth()
   async getMisSolicitudes(@Request() req) {
-    return this.solicitudService.getSolicitudesByPaciente(req.user.cedula);
+    return this.solicitudService.getSolicitudesByPaciente(req.user.identificacion);
   }
 
   @Get('solicitudes-abiertas')
@@ -100,5 +100,12 @@ export class SoporteController {
   async getOpenSolicitudes() {
     return this.solicitudService.getOpenSolicitudes();
   }
+  @Roles(Role.Administrador)
+  @Get(':id')
+  async getSolicitudById(@Param('id', ParseIntPipe) id: number) {
+    return this.solicitudService.getSolicitudById(id);
+  }
+
+  
 }
 

@@ -53,7 +53,7 @@ model Diagnostico {
 }
 
 model SolicitudSoporte {
-  id            String    @id @default(uuid())
+  id            Int       @id @default(autoincrement())
   titulo        String    @db.VarChar(100)
   fechaReporte  DateTime  @default(now())
   fechaSolucion DateTime?
@@ -74,7 +74,7 @@ model Mensaje {
   fecha             DateTime         @default(now())
   // Relaciones
   solicitudSoporte  SolicitudSoporte @relation(fields: [solicitudId], references: [id])
-  solicitudId       String
+  solicitudId       Int
   autor             Usuario          @relation("EnviaMensaje", fields: [autorId], references: [identificacion])
   autorId           Int
 

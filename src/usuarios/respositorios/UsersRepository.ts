@@ -90,4 +90,28 @@ export class UserRepository {
       where: { identificacion: id },
     });
   }
+
+  async getMedicos(){
+    return this.prisma.usuario.findMany({
+      where: {
+        rol: 'M'
+      }
+    })
+  }
+
+  async getPacientes(){
+    return this.prisma.usuario.findMany({
+      where: {
+        rol: 'P'
+      }
+    })
+  }
+
+  async getAdministradores(){
+    return this.prisma.usuario.findMany({
+      where:{
+        rol: 'A'
+      }
+    })
+  }
 }
