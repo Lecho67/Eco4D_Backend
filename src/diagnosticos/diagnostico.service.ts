@@ -164,21 +164,14 @@ export class DiagnosticoService {
       },
     });
 
-    // Procesar cada diagnóstico para incluir la edad y URLs seguras
-    const processedDiagnosticos = await Promise.all(
-      diagnosticos.map(async (diagnostico) => {
-        const processed = await this.generateSecureUrls(diagnostico);
-        return {
-          ...processed,
-          paciente: {
-            ...processed.paciente,
-            edad: this.calculateAge(processed.paciente.fecha_nacimiento),
-          },
-        };
-      })
-    );
-
-    return processedDiagnosticos;
+    // Procesar cada diagnóstico para incluir solo la edad
+    return diagnosticos.map(diagnostico => ({
+      ...diagnostico,
+      paciente: {
+        ...diagnostico.paciente,
+        edad: this.calculateAge(diagnostico.paciente.fecha_nacimiento),
+      },
+    }));
   }
 
   async getDiagnosticosByPaciente(pacienteId: number, userRole: string) {
@@ -204,18 +197,11 @@ export class DiagnosticoService {
       },
     });
 
-    // Procesar cada diagnóstico para incluir la edad y URLs seguras
-    const processedDiagnosticos = await Promise.all(
-      diagnosticos.map(async (diagnostico) => {
-        const processed = await this.generateSecureUrls(diagnostico);
-        return {
-          ...processed,
-          edad_paciente: this.calculateAge(processed.paciente.fecha_nacimiento),
-        };
-      })
-    );
-
-    return processedDiagnosticos;
+    // Procesar cada diagnóstico para incluir solo la edad
+    return diagnosticos.map(diagnostico => ({
+      ...diagnostico,
+      edad_paciente: this.calculateAge(diagnostico.paciente.fecha_nacimiento),
+    }));
   }
  
   async getDiagnosticoById(diagnosticoId: number, userId: number, userRole: string) {
@@ -268,6 +254,4 @@ export class DiagnosticoService {
       };
     }
   }  
-
-
 }

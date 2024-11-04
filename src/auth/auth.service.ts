@@ -38,10 +38,14 @@ export class AuthService {
 
     return {
       user: {
-        cedula: user.identificacion,
+        identificacion: user.identificacion,
+        tipoIdentificacion: user.tipoIdentificacion,
         nombre_completo: user.nombre_completo,
         correo_electronico: user.correo_electronico,
         rol: user.rol,
+        pais: user.pais,
+        ciudad: user.ciudad,
+        fecha_nacimiento: user.fecha_nacimiento
       },
       token,
     };
@@ -69,10 +73,15 @@ export class AuthService {
 
     return {
       user: {
-        cedula: user.identificacion,
+        identificacion: user.identificacion,
+        tipoIdentificacion: user.tipoIdentificacion,
         nombre_completo: user.nombre_completo,
         correo_electronico: user.correo_electronico,
         rol: user.rol,
+        pais: user.pais,
+        ciudad: user.ciudad,
+        fecha_nacimiento: user.fecha_nacimiento
+        
       },
       token,
     };
