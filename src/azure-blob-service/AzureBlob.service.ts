@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
+import { Injectable, ForbiddenException } from '@nestjs/common';
+import { BlobServiceClient, BlockBlobClient, generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } from '@azure/storage-blob';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AzureBlobService {
   private readonly containerName: string;
+  private readonly accountName: string;
+  private readonly accountKey: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+  ) {
     this.containerName = this.configService.get<string>('AZURE_STORAGE_CONTAINER_NAME');
+    this.accountName = this.configService.get<string>('AZURE_STORAGE_ACCOUNT_NAME');
+    this.accountKey = this.configService.get<string>('AZURE_STORAGE_ACCOUNT_KEY');
   }
 
   private getBlobClient(imageName: string): BlockBlobClient {
@@ -26,6 +32,31 @@ export class AzureBlobService {
       blobHTTPHeaders: { blobContentType: file.mimetype }
     });
 
-    return blobClient.url;
+    return fileName; // Retornamos solo el nombre del archivo en lugar de la URL
+  }
+
+  generateSasUrl(blobName: string): string {
+    const sharedKeyCredential = new StorageSharedKeyCredential(
+      this.accountName,
+      this.accountKey
+    );
+
+    const startsOn = new Date();
+    const expiresOn = new Date(new Date().valueOf() + 3600 * 1000); // URL válida por 1 hora
+
+    const sasOptions = {
+      containerName: this.containerName,
+      blobName: blobName,
+      permissions: BlobSASPermissions.parse('r'), // Solo lectura
+      startsOn: startsOn,
+      expiresOn: expiresOn,
+    };
+
+    const sasToken = generateBlobSASQueryParameters(
+      sasOptions,
+      sharedKeyCredential
+    ).toString();
+
+    return `https://${this.accountName}.blob.core.windows.net/${this.containerName}/${blobName}?${sasToken}`;
   }
 }

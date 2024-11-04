@@ -43,19 +43,19 @@ export class DiagnosticoService {
     }
 
     try {
-      // Subir ambos archivos a Azure Blob Storage
-      const [videoUrl, imagenUrl] = await Promise.all([
+      // Subir archivos y guardar solo los nombres
+      const [videoName, imagenName] = await Promise.all([
         this.azureBlobService.upload(video),
         this.azureBlobService.upload(imagen)
       ]);
 
-      // Crear el diagnóstico en la base de datos
+      // Crear el diagnóstico con los nombres de los archivos
       const diagnostico = await this.prisma.diagnostico.create({
         data: {
           descripcion: createDiagnosticoDto.descripcion,
           edadGestacional: createDiagnosticoDto.edadGestacional,
-          enlaceFoto: imagenUrl,
-          enlaceVideo: videoUrl,
+          enlaceFoto: imagenName, // Guardamos solo el nombre
+          enlaceVideo: videoName, // Guardamos solo el nombre
           shareLink: createDiagnosticoDto.shareLink,
           calificacion: createDiagnosticoDto.calificacion,
           medicoId: medicoId,
@@ -77,8 +77,14 @@ export class DiagnosticoService {
         },
       });
 
+      
+      const secureImageUrl = this.azureBlobService.generateSasUrl(imagenName);
+      const secureVideoUrl = this.azureBlobService.generateSasUrl(videoName);
+
       return {
         ...diagnostico,
+        enlaceFoto: secureImageUrl,
+        enlaceVideo: secureVideoUrl,
         message: 'Diagnóstico creado exitosamente',
       };
     } catch (error) {
@@ -87,4 +93,181 @@ export class DiagnosticoService {
       );
     }
   }
+
+  async getSecureUrl(diagnosticoId: number, userId: number) {
+    const diagnostico = await this.prisma.diagnostico.findUnique({
+      where: { id: diagnosticoId },
+      include: {
+        medico: true,
+        paciente: true,
+      },
+    });
+
+    if (!diagnostico) {
+      throw new NotFoundException('Diagnóstico no encontrado');
+    }
+
+    // Verificar si el usuario tiene acceso
+    if (diagnostico.medicoId !== userId && diagnostico.pacienteId !== userId) {
+      throw new ForbiddenException('No tiene acceso a este recurso');
+    }
+
+    // Generar URLs temporales
+    const secureImageUrl = this.azureBlobService.generateSasUrl(diagnostico.enlaceFoto);
+    const secureVideoUrl = this.azureBlobService.generateSasUrl(diagnostico.enlaceVideo);
+
+    return {
+      imageUrl: secureImageUrl,
+      videoUrl: secureVideoUrl,
+    };
+  }
+
+  private calculateAge(birthDate: Date): number {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age;
+  }
+
+  private async generateSecureUrls(diagnostico: any) {
+    const secureImageUrl = this.azureBlobService.generateSasUrl(diagnostico.enlaceFoto);
+    const secureVideoUrl = this.azureBlobService.generateSasUrl(diagnostico.enlaceVideo);
+    return {
+      ...diagnostico,
+      enlaceFoto: secureImageUrl,
+      enlaceVideo: secureVideoUrl,
+    };
+  }
+
+  async getDiagnosticosByMedico(medicoId: number) {
+    const diagnosticos = await this.prisma.diagnostico.findMany({
+      where: {
+        medicoId: medicoId,
+      },
+      include: {
+        paciente: {
+          select: {
+            nombre_completo: true,
+            fecha_nacimiento: true,
+            correo_electronico: true,
+          },
+        },
+      },
+      orderBy: {
+        fecha: 'desc',
+      },
+    });
+
+    // Procesar cada diagnóstico para incluir la edad y URLs seguras
+    const processedDiagnosticos = await Promise.all(
+      diagnosticos.map(async (diagnostico) => {
+        const processed = await this.generateSecureUrls(diagnostico);
+        return {
+          ...processed,
+          paciente: {
+            ...processed.paciente,
+            edad: this.calculateAge(processed.paciente.fecha_nacimiento),
+          },
+        };
+      })
+    );
+
+    return processedDiagnosticos;
+  }
+
+  async getDiagnosticosByPaciente(pacienteId: number, userRole: string) {
+    const diagnosticos = await this.prisma.diagnostico.findMany({
+      where: {
+        pacienteId: pacienteId,
+      },
+      include: {
+        medico: {
+          select: {
+            nombre_completo: true,
+            correo_electronico: true,
+          },
+        },
+        paciente: {
+          select: {
+            fecha_nacimiento: true,
+          },
+        },
+      },
+      orderBy: {
+        fecha: 'desc',
+      },
+    });
+
+    // Procesar cada diagnóstico para incluir la edad y URLs seguras
+    const processedDiagnosticos = await Promise.all(
+      diagnosticos.map(async (diagnostico) => {
+        const processed = await this.generateSecureUrls(diagnostico);
+        return {
+          ...processed,
+          edad_paciente: this.calculateAge(processed.paciente.fecha_nacimiento),
+        };
+      })
+    );
+
+    return processedDiagnosticos;
+  }
+ 
+  async getDiagnosticoById(diagnosticoId: number, userId: number, userRole: string) {
+    const diagnostico = await this.prisma.diagnostico.findUnique({
+      where: {
+        id: diagnosticoId,
+      },
+      include: {
+        medico: {
+          select: {
+            nombre_completo: true,
+            correo_electronico: true,
+          },
+        },
+        paciente: {
+          select: {
+            nombre_completo: true,
+            correo_electronico: true,
+            fecha_nacimiento: true,
+          },
+        },
+      },
+    });
+
+    if (!diagnostico) {
+      throw new NotFoundException('Diagnóstico no encontrado');
+    }
+
+    // Verificar acceso: solo el médico que lo creó o el paciente asociado pueden verlo
+    if (diagnostico.medicoId !== userId && diagnostico.pacienteId !== userId) {
+      throw new ForbiddenException('No tiene acceso a este diagnóstico');
+    }
+
+    // Generar URLs seguras
+    const processedDiagnostico = await this.generateSecureUrls(diagnostico);
+
+    // Preparar la respuesta según el rol del usuario
+    if (userRole === 'M') {
+      return {
+        ...processedDiagnostico,
+        paciente: {
+          ...processedDiagnostico.paciente,
+          edad: this.calculateAge(processedDiagnostico.paciente.fecha_nacimiento),
+        },
+      };
+    } else {
+      return {
+        ...processedDiagnostico,
+        edad_paciente: this.calculateAge(processedDiagnostico.paciente.fecha_nacimiento),
+      };
+    }
+  }  
+
+
 }

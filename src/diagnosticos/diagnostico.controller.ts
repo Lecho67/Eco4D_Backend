@@ -6,7 +6,11 @@ import {
     UseInterceptors,
     UseGuards,
     Request,
-    BadRequestException
+    BadRequestException,
+    Get,
+    Param, 
+    ParseIntPipe,
+    ForbiddenException
   } from '@nestjs/common';
   import { FileFieldsInterceptor } from '@nestjs/platform-express';
   import { DiagnosticoService } from './diagnostico.service';
@@ -66,4 +70,46 @@ import {
         req.user.identificacion
       );
     }
+  @UseGuards(AuthGuard)  
+  @Get('/secure-urls/:id')
+  async getSecureUrls(@Param('id') id: string, @Request() req) {
+    return this.diagnosticoService.getSecureUrl(
+      parseInt(id),
+      req.user.identificacion
+    );
   }
+
+  @Get('mis-diagnosticos')
+  async getDiagnosticos(@Request() req) {
+    const { identificacion, rol } = req.user;
+
+    if (rol === 'M') {
+      return this.diagnosticoService.getDiagnosticosByMedico(identificacion);
+    } else if (rol === 'P') {
+      return this.diagnosticoService.getDiagnosticosByPaciente(identificacion, rol);
+    } else {
+      throw new ForbiddenException('Rol no autorizado para ver diagnósticos');
+    }
+  }
+
+  @Get('paciente/:id')
+  @Roles(Role.Medico) // Solo los médicos pueden ver diagnósticos de otros pacientes
+  async getDiagnosticosByPaciente(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    return this.diagnosticoService.getDiagnosticosByPaciente(id, req.user.rol);
+  }
+
+  @Get(':id')
+  @Roles(Role.Medico, Role.Paciente)
+  async getDiagnostico(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() req,
+  ) {
+    return this.diagnosticoService.getDiagnosticoById(
+      id,
+      req.user.identificacion,
+      req.user.rol
+    );
+  }
+
+
+}
