@@ -6,11 +6,14 @@ import { MensajesModule } from './mensajes/mensajes.module';
 import { PrismaService } from './prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
-
+import { AzureBlobService } from './azure-blob-service/AzureBlob.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UsuariosModule, DiagnosticosModule, SoporteModule, MensajesModule, AuthModule],
+  imports: [ ConfigModule.forRoot({
+    isGlobal: true,
+  }),UsuariosModule, DiagnosticosModule, SoporteModule, MensajesModule, AuthModule],
   controllers: [],
-  providers: [PrismaService,JwtService],
+  providers: [PrismaService,JwtService, AzureBlobService],
 })
 export class AppModule {}

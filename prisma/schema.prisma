@@ -15,14 +15,17 @@ datasource db {
 
 
 model Usuario {
-  cedula                Int      @id
+  identificacion        Int      @id
+  tipoIdentificacion    String
   nombre_completo       String
   correo_electronico    String   @unique
   contrasena            String
-  rol                   String   @db.Char(1)  // P=Paciente, M=Médico, A=Administrador
+  rol                   String   @db.Char(1) @default("P") // P=Paciente, M=Médico, A=Administrador
+  pais                  String
+  ciudad                String
+  fecha_nacimiento       DateTime @db.Date 
   // Relaciones para solicitudes de soporte
   solicitudesRealizadas SolicitudSoporte[] @relation("Solicita")
-  solicitudesAtendidas  SolicitudSoporte[] @relation("Atiende")
   // Relaciones para diagnósticos - solo una será usada según el rol
   diagnosticosComoMedico    Diagnostico[] @relation("DiagnosticoMedico")
   diagnosticosComoPaciente  Diagnostico[] @relation("DiagnosticoPaciente") 
@@ -40,9 +43,9 @@ model Diagnostico {
   descripcion      String    @db.Text
   edadGestacional  String    @db.VarChar(255)
   // Relaciones
-  medico           Usuario   @relation("DiagnosticoMedico", fields: [medicoId], references: [cedula])
+  medico           Usuario   @relation("DiagnosticoMedico", fields: [medicoId], references: [identificacion])
   medicoId         Int
-  paciente         Usuario   @relation("DiagnosticoPaciente", fields: [pacienteId], references: [cedula])
+  paciente         Usuario   @relation("DiagnosticoPaciente", fields: [pacienteId], references: [identificacion])
   pacienteId       Int
 
   @@index([medicoId])
@@ -50,7 +53,7 @@ model Diagnostico {
 }
 
 model SolicitudSoporte {
-  id            String    @id @default(uuid())
+  id            Int       @id @default(autoincrement())
   titulo        String    @db.VarChar(100)
   fechaReporte  DateTime  @default(now())
   fechaSolucion DateTime?
@@ -58,14 +61,11 @@ model SolicitudSoporte {
   descripcion   String    @db.Text
   estado        String    @default("A") // A=abierta, R=resuelta
   // Relaciones
-  solicitante   Usuario   @relation("Solicita", fields: [solicitanteId], references: [cedula])
+  solicitante   Usuario   @relation("Solicita", fields: [solicitanteId], references: [identificacion])
   solicitanteId Int
-  encargado     Usuario?  @relation("Atiende", fields: [encargadoId], references: [cedula])
-  encargadoId   Int?
   mensajes      Mensaje[]
 
   @@index([solicitanteId])
-  @@index([encargadoId])
 }
 
 model Mensaje {
@@ -74,8 +74,8 @@ model Mensaje {
   fecha             DateTime         @default(now())
   // Relaciones
   solicitudSoporte  SolicitudSoporte @relation(fields: [solicitudId], references: [id])
-  solicitudId       String
-  autor             Usuario          @relation("EnviaMensaje", fields: [autorId], references: [cedula])
+  solicitudId       Int
+  autor             Usuario          @relation("EnviaMensaje", fields: [autorId], references: [identificacion])
   autorId           Int
 
   @@index([solicitudId])

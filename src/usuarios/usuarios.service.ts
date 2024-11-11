@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
-
+import { UserRepository } from './respositorios/UsersRepository';
 @Injectable()
 export class UsuariosService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly repositorioUsuario: UserRepository) {}
 
-    getUsers() {
-        return this.prisma.usuario.findMany();
+    getPacientes() {
+        return this.repositorioUsuario.getPacientes();
     }
 
+    getMedicos() {
+        return this.repositorioUsuario.getMedicos();
+    }
+
+    getAdministradores() {
+        return this.repositorioUsuario.getAdministradores();
+    }
 }

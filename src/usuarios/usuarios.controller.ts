@@ -7,18 +7,28 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @Controller('usuarios')
 export class UsuariosController {
     constructor(private readonly usuariosService: UsuariosService){}
-    @Get('/')
-    getUsers(): any {
-        return this.usuariosService.getUsers();
-    }
     // Ejemplo de como se crean las rutas por roles
-    @Get('/admin')
+    @Get('/administradores')
     @UseGuards(AuthGuard,RolesGuard)
     @Roles(Role.Administrador)
-    getAdminThings(): string {
-        return 'AdminThings';
-    
+
+    getAdmin(){
+        return this.usuariosService.getAdministradores();
     }
     
+    @Get('/medicos')
+    @UseGuards(AuthGuard,RolesGuard)
+    @Roles(Role.Administrador)
 
+    getMedico(){
+        return this.usuariosService.getMedicos();
+    }
+
+    @Get('/pacientes')
+    @UseGuards(AuthGuard,RolesGuard)
+    @Roles(Role.Administrador)
+
+    getPaciente(){
+        return this.usuariosService.getPacientes();
+    }
 }

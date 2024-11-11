@@ -1,6 +1,6 @@
 // src/modules/solicitudes/services/solicitud.service.ts
-import { Injectable } from '@nestjs/common';
-import { SolicitudRepository } from './respository/solicitud.respository';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { SolicitudRepository } from './repository/solicitud.repository';
 import { CreateSolicitudDto } from './dto/create-solicitud.dto';
 
 @Injectable()
@@ -17,5 +17,14 @@ export class SoporteService {
 
   async getOpenSolicitudes() {
     return this.solicitudRepository.findAllOpenSolicitudes();
+  }
+
+  async getSolicitudById(id: number) {
+    const solicitud = await this.solicitudRepository.findById(id);
+
+    if (!solicitud) {
+      throw new BadRequestException('Solicitud no encontrada');
+    }
+    return solicitud;
   }
 }
