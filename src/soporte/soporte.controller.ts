@@ -1,5 +1,5 @@
 // src/modules/solicitudes/controllers/solicitud.controller.ts
-import { Controller, Get, Post, Body, UseGuards, Request, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Request, Param, ParseIntPipe, Put } from '@nestjs/common';
 import { SoporteService } from './soporte.service';
 import { CreateSolicitudDto } from './dto/create-solicitud.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -106,6 +106,10 @@ export class SoporteController {
     return this.solicitudService.getSolicitudById(id);
   }
 
-  
+  @Roles(Role.Administrador)
+  @Put('fechaSolucion/:id')
+  async anadirFechaSolucion(@Param('id', ParseIntPipe) id: number) {
+    return this.solicitudService.añadirFechaSolucion(id);
+  }
 }
 

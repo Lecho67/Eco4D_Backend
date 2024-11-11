@@ -27,4 +27,8 @@ export class SoporteService {
     }
     return solicitud;
   }
+
+  async añadirFechaSolucion(id:number) {
+    return this.solicitudRepository.añadirFechaSolucion(id);
+  }
 }

@@ -73,7 +73,18 @@ export class SolicitudRepository {
         }
       }
     });
+  
 
+  }
+
+  async añadirFechaSolucion(id:number){
+    return this.prisma.solicitudSoporte.update({
+      where: { id },
+      data: {
+        estado: 'R',
+        fechaSolucion: new Date()
+      },
+    });
   }
 
 }
