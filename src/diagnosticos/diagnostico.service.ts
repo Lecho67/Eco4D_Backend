@@ -254,4 +254,19 @@ export class DiagnosticoService {
       };
     }
   }  
+
+  async calificarDiagnostico(diagnosticoId: number, calificacion: number, userId: number) {
+    const diagnostico = await this.prisma.diagnostico.findFirst({
+      where:{ AND: [{ id: diagnosticoId }, { pacienteId: userId }] }
+    });
+
+    if (!diagnostico) {
+      throw new NotFoundException('Diagnóstico no encontrado');
+    }
+
+    return this.prisma.diagnostico.update({
+      where: { id: diagnosticoId },
+      data: { calificacion },
+    });
+  }
 }

@@ -10,7 +10,9 @@ import {
     Get,
     Param, 
     ParseIntPipe,
-    ForbiddenException
+    ForbiddenException,
+    Put,
+    Req
   } from '@nestjs/common';
   import { FileFieldsInterceptor } from '@nestjs/platform-express';
   import { DiagnosticoService } from './diagnostico.service';
@@ -111,4 +113,13 @@ import {
     );
   }
 
+  @Put('calificacion/:id/:calificacion')
+  @Roles(Role.Paciente)
+  async calificarDiagnostico(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('calificacion', ParseIntPipe) calificacion: number,
+    @Request() req
+  ){
+    return this.diagnosticoService.calificarDiagnostico(id, calificacion, req.user.identificacion);
+  }
 }
