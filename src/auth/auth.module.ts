@@ -6,6 +6,9 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/JWTStrategy';
 import { UsuariosModule } from 'src/usuarios/usuarios.module';
 import { AuthGuard } from './auth.guard';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RefreshTokenRepository } from './repositories/refresh-token.repository';
+import { PrismaService } from 'src/prisma.service';
 
 @Module({
   imports: [
@@ -19,7 +22,7 @@ import { AuthGuard } from './auth.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy,RefreshTokenRepository,PrismaService],
   exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
