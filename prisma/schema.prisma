@@ -31,6 +31,7 @@ model Usuario {
   diagnosticosComoPaciente  Diagnostico[] @relation("DiagnosticoPaciente") 
   // Relaciones para mensajes
   mensajesEnviados     Mensaje[]    @relation("EnviaMensaje")
+  refreshToken         RefreshToken?       
 }
 
 model Diagnostico {
@@ -69,7 +70,7 @@ model SolicitudSoporte {
 }
 
 model Mensaje {
-  id                String           @id @default(uuid())
+  id                Int              @id @default(autoincrement())
   descripcion       String           @db.Text
   fecha             DateTime         @default(now())
   // Relaciones
@@ -80,4 +81,11 @@ model Mensaje {
 
   @@index([solicitudId])
   @@index([autorId])
+}
+
+model RefreshToken{
+  id                    Int            @id @default(autoincrement())
+  fechaExpiracion       DateTime   
+  userId                Int            @unique
+  usuario               Usuario        @relation(fields: [userId], references: [identificacion])              
 }
