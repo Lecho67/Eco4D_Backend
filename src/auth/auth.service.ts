@@ -1,5 +1,7 @@
+// auth.service.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
@@ -14,27 +16,24 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto, response: Response) {
     const { contrasena, ...rest } = registerDto;
     
-    // Verificar si el usuario ya existe
     const userExists = await this.userRepository.findByEmail(rest.correo_electronico);
 
     if (userExists) {
       throw new UnauthorizedException('El usuario ya existe');
     }
 
-    // Encriptar contraseña
     const hashedPassword = await bcrypt.hash(contrasena, 10);
 
-    // Crear usuario
     const user = await this.userRepository.create({
       ...rest,
       contrasena: hashedPassword
     });
 
-    // Generar token
-    const token = await this.generateToken(user);
+    // Generar token y establecer cookie
+    await this.setAuthCookie(user, response);
 
     return {
       user: {
@@ -46,30 +45,27 @@ export class AuthService {
         pais: user.pais,
         ciudad: user.ciudad,
         fecha_nacimiento: user.fecha_nacimiento
-      },
-      token,
+      }
     };
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, response: Response) {
     const { correo_electronico, contrasena } = loginDto;
 
-    // Buscar usuario
     const user = await this.userRepository.findByEmail(correo_electronico);
 
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Verificar contraseña
     const isPasswordValid = await bcrypt.compare(contrasena, user.contrasena);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Generar token
-    const token = await this.generateToken(user);
+    // Generar token y establecer cookie
+    await this.setAuthCookie(user, response);
 
     return {
       user: {
@@ -81,10 +77,18 @@ export class AuthService {
         pais: user.pais,
         ciudad: user.ciudad,
         fecha_nacimiento: user.fecha_nacimiento
-        
-      },
-      token,
+      }
     };
+  }
+
+  async logout(response: Response) {
+    response.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/'
+    });
+    return { message: 'Logout exitoso' };
   }
 
   private async generateToken(user: Usuario) {
@@ -95,5 +99,18 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload);
+  }
+
+  private async setAuthCookie(user: Usuario, response: Response) {
+    const token = await this.generateToken(user);
+    
+    // Establecer cookie HTTP-only
+    response.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // true en producción
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000, // 1 día
+      path: '/'
+    });
   }
 }
