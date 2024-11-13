@@ -1,4 +1,4 @@
-import { Usuario } from "./Usuarios";
+import { Usuario } from "./Usuario";
 
 export interface IUserRepository {
     findById(id: number): Promise<Usuario>;
