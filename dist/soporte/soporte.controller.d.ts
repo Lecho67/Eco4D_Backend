@@ -9,33 +9,28 @@ export declare class SoporteController {
             correo_electronico: string;
         };
     } & {
-        titulo: string;
-        tipo: string;
+        id: number;
         descripcion: string;
-        id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
         estado: string;
         solicitanteId: number;
-        encargadoId: number | null;
     }>;
     getMisSolicitudes(req: any): Promise<({
         solicitante: {
             nombre_completo: string;
         };
-        encargado: {
-            nombre_completo: string;
-        };
     } & {
-        titulo: string;
-        tipo: string;
+        id: number;
         descripcion: string;
-        id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
         estado: string;
         solicitanteId: number;
-        encargadoId: number | null;
     })[]>;
     getOpenSolicitudes(): Promise<({
         solicitante: {
@@ -43,14 +38,38 @@ export declare class SoporteController {
             correo_electronico: string;
         };
     } & {
-        titulo: string;
-        tipo: string;
+        id: number;
         descripcion: string;
-        id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
         estado: string;
         solicitanteId: number;
-        encargadoId: number | null;
     })[]>;
+    getSolicitudById(id: number): Promise<{
+        solicitante: {
+            nombre_completo: string;
+            correo_electronico: string;
+        };
+    } & {
+        id: number;
+        descripcion: string;
+        titulo: string;
+        fechaReporte: Date;
+        fechaSolucion: Date | null;
+        tipo: string;
+        estado: string;
+        solicitanteId: number;
+    }>;
+    anadirFechaSolucion(id: number): Promise<{
+        id: number;
+        descripcion: string;
+        titulo: string;
+        fechaReporte: Date;
+        fechaSolucion: Date | null;
+        tipo: string;
+        estado: string;
+        solicitanteId: number;
+    }>;
 }

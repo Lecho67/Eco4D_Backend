@@ -1,4 +1,4 @@
-import { SolicitudRepository } from './respository/solicitud.respository';
+import { SolicitudRepository } from './repository/solicitud.repository';
 import { CreateSolicitudDto } from './dto/create-solicitud.dto';
 export declare class SoporteService {
     private readonly solicitudRepository;
@@ -9,33 +9,28 @@ export declare class SoporteService {
             correo_electronico: string;
         };
     } & {
-        titulo: string;
-        tipo: string;
+        id: number;
         descripcion: string;
-        id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
         estado: string;
         solicitanteId: number;
-        encargadoId: number | null;
     }>;
     getSolicitudesByPaciente(pacienteId: number): Promise<({
         solicitante: {
             nombre_completo: string;
         };
-        encargado: {
-            nombre_completo: string;
-        };
     } & {
-        titulo: string;
-        tipo: string;
+        id: number;
         descripcion: string;
-        id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
         estado: string;
         solicitanteId: number;
-        encargadoId: number | null;
     })[]>;
     getOpenSolicitudes(): Promise<({
         solicitante: {
@@ -43,14 +38,38 @@ export declare class SoporteService {
             correo_electronico: string;
         };
     } & {
-        titulo: string;
-        tipo: string;
+        id: number;
         descripcion: string;
-        id: string;
+        titulo: string;
         fechaReporte: Date;
         fechaSolucion: Date | null;
+        tipo: string;
         estado: string;
         solicitanteId: number;
-        encargadoId: number | null;
     })[]>;
+    getSolicitudById(id: number): Promise<{
+        solicitante: {
+            nombre_completo: string;
+            correo_electronico: string;
+        };
+    } & {
+        id: number;
+        descripcion: string;
+        titulo: string;
+        fechaReporte: Date;
+        fechaSolucion: Date | null;
+        tipo: string;
+        estado: string;
+        solicitanteId: number;
+    }>;
+    añadirFechaSolucion(id: number): Promise<{
+        id: number;
+        descripcion: string;
+        titulo: string;
+        fechaReporte: Date;
+        fechaSolucion: Date | null;
+        tipo: string;
+        estado: string;
+        solicitanteId: number;
+    }>;
 }
