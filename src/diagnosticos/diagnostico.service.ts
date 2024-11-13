@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException, ForbiddenException 
 import { PrismaService } from 'src/prisma.service';
 import { AzureBlobService } from 'src/azure-blob-service/AzureBlob.service';
 import { CreateDiagnosticoDto } from './dto/create-diagnosticos.dto';
+import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class DiagnosticoService {
@@ -255,6 +256,12 @@ export class DiagnosticoService {
     }
   }  
 
+  @ApiOperation({ summary: 'Calificar diagnóstico' })
+  @ApiParam({ name: 'id', description: 'ID del diagnóstico', type: Number })
+  @ApiParam({ name: 'calificacion', description: 'Calificación para el diagnóstico (1-5)', type: Number })
+  @ApiResponse({ status: 200, description: 'Diagnóstico calificado exitosamente.' })
+  @ApiResponse({ status: 404, description: 'Diagnóstico no encontrado.' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado.' })
   async calificarDiagnostico(diagnosticoId: number, calificacion: number, userId: number) {
     const diagnostico = await this.prisma.diagnostico.findFirst({
       where:{ AND: [{ id: diagnosticoId }, { pacienteId: userId }] }

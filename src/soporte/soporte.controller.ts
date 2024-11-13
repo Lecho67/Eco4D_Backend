@@ -6,7 +6,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/usuarios/roles/roles.guard';
 import { Roles } from 'src/usuarios/roles/roles.decorator';
 import { Role } from 'src/usuarios/roles/roles.enum';
-import { ApiOperation, ApiResponse,ApiBearerAuth } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse,ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 @Controller('soporte')
 @UseGuards(AuthGuard, RolesGuard)
 export class SoporteController {
@@ -71,7 +71,6 @@ export class SoporteController {
       ]
     }
   })
-  @ApiBearerAuth()
   async getMisSolicitudes(@Request() req) {
     return this.solicitudService.getSolicitudesByPaciente(req.user.identificacion);
   }
@@ -96,18 +95,28 @@ export class SoporteController {
       ]
     }
   })
-  @ApiBearerAuth()
   async getOpenSolicitudes() {
     return this.solicitudService.getOpenSolicitudes();
   }
   @Roles(Role.Administrador)
   @Get(':id')
+
+  @ApiOperation({ summary: 'Obtener solicitud por ID' })
+  @ApiParam({ name: 'id', description: 'ID de la solicitud a obtener', type: Number })
+  @ApiResponse({ status: 200, description: 'Solicitud obtenida exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Solicitud no encontrada.' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado.' })
   async getSolicitudById(@Param('id', ParseIntPipe) id: number) {
     return this.solicitudService.getSolicitudById(id);
   }
 
   @Roles(Role.Administrador)
   @Put('fechaSolucion/:id')
+  @ApiOperation({ summary: 'Añadir fecha de solución a la solicitud' })
+  @ApiParam({ name: 'id', description: 'ID de la solicitud a la que se añadirá la fecha de solución', type: Number })
+  @ApiResponse({ status: 200, description: 'Fecha de solución añadida exitosamente a la solicitud.' })
+  @ApiResponse({ status: 404, description: 'Solicitud no encontrada.' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado.' })
   async anadirFechaSolucion(@Param('id', ParseIntPipe) id: number) {
     return this.solicitudService.añadirFechaSolucion(id);
   }
