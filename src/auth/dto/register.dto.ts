@@ -8,7 +8,7 @@ export class RegisterDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  @MaxLength(10)
+  // @MaxLength(10)
   identificacion: number;
 
   @ApiProperty({
