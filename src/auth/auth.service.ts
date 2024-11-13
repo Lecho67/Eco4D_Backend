@@ -167,14 +167,14 @@ export class AuthService {
   async logout(response: Response) {
     response.clearCookie('token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,//process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/'
     });
     
     response.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,//process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/auth/refresh'
     });
@@ -194,7 +194,7 @@ export class AuthService {
   private setAuthCookie(token: string, response: Response) {
     response.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,//process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000, // 1 día
       path: '/'
@@ -204,7 +204,7 @@ export class AuthService {
   private setRefreshCookie(token: string, response: Response) {
     response.cookie('refreshToken', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,//process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
       path: '/auth/refresh'
