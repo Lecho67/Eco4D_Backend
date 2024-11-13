@@ -33,7 +33,7 @@ export class UsuariosController {
     // Obtener todos los pacientes
     @Get('/pacientes')
     @UseGuards(AuthGuard, RolesGuard)
-    @Roles(Role.Administrador)
+    @Roles(Role.Administrador,Role.Medico)
     @ApiOperation({ summary: 'Obtener lista de pacientes' })
     @ApiResponse({ status: 200, description: 'Lista de pacientes obtenida exitosamente.' })
     @ApiResponse({ status: 403, description: 'Acceso denegado.' })
