@@ -31,8 +31,8 @@ export class CreateDiagnosticoDto {
     required: true
   })
   @IsNotEmpty({ message: 'La edad gestacional es requerida' })
-  @IsString({ message: 'La edad gestacional debe ser un texto' })
-  edadGestacional: string;
+  @Type(() => Number)
+  edadGestacional: number;
 
   shareLink?: string;
 

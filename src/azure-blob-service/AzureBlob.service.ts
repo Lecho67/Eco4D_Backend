@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { BlobServiceClient, BlockBlobClient, generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } from '@azure/storage-blob';
 import { ConfigService } from '@nestjs/config';
-
+import { VideoConverterService } from 'src/video-converter/video-converter.service';
 @Injectable()
 export class AzureBlobService {
   private readonly containerName: string;
@@ -10,6 +10,7 @@ export class AzureBlobService {
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly videoConverterService: VideoConverterService
   ) {
     this.containerName = this.configService.get<string>('AZURE_STORAGE_CONTAINER_NAME');
     this.accountName = this.configService.get<string>('AZURE_STORAGE_ACCOUNT_NAME');
@@ -25,16 +26,30 @@ export class AzureBlobService {
   }
 
   async upload(file: Express.Multer.File): Promise<string> {
-    const fileName = `${Date.now()}-${file.originalname}`;
+    let fileBuffer = file.buffer;
+    let mimeType = file.mimetype;
+    let fileName = `${Date.now()}-${file.originalname}`;
+
+    // Si es un video, convertir a MP4
+    if (mimeType.startsWith('video/')) {
+      const convertedVideo = await this.videoConverterService.convertToMp4(fileBuffer, mimeType);
+      fileBuffer = convertedVideo.buffer;
+      mimeType = convertedVideo.mimetype;
+      // Asegurarnos que el nombre del archivo termine en .mp4
+      fileName = fileName.replace(/[^\w\d.-]/g, '');  // Solo permite letras, números, guiones y puntos
+
+      // Ahora cambiar la extensión
+      fileName = fileName.replace(/\.[^/.]+$/, '.mp4');
+    }
+
     const blobClient = this.getBlobClient(fileName);
     
-    await blobClient.uploadData(file.buffer, {
-      blobHTTPHeaders: { blobContentType: file.mimetype }
+    await blobClient.uploadData(fileBuffer, {
+      blobHTTPHeaders: { blobContentType: mimeType }
     });
 
-    return fileName; // Retornamos solo el nombre del archivo en lugar de la URL
+    return fileName;
   }
-
   generateSasUrl(blobName: string): string {
     const sharedKeyCredential = new StorageSharedKeyCredential(
       this.accountName,

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { exec } from 'child_process';
+import * as ffmpegStatic from 'ffmpeg-static';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
@@ -29,8 +30,8 @@ export class VideoConverterService {
       // Guardar archivo temporalmente
       fs.writeFileSync(inputPath, buffer);
 
-      // Convertir video
-      await execPromise(`ffmpeg -i ${inputPath} -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k ${outputPath}`);
+      // Convertir video utilizando la ruta proporcionada por ffmpeg-static
+      await execPromise(`"${ffmpegStatic}" -i ${inputPath} -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k ${outputPath}`);
 
       // Leer el archivo convertido
       const convertedBuffer = fs.readFileSync(outputPath);

@@ -44,20 +44,30 @@ export class DiagnosticoService {
     }
 
     try {
-      // Subir archivos y guardar solo los nombres
-      const [videoName, imagenName] = await Promise.all([
-        this.azureBlobService.upload(video),
-        this.azureBlobService.upload(imagen)
-      ]);
+      // Subir archivos a Azure y obtener los nombres de archivo
+      let videoName: string, imagenName: string;
 
-      // Crear el diagnóstico con los nombres de los archivos
+      try {
+        [videoName, imagenName] = await Promise.all([
+          this.azureBlobService.upload(video),
+          this.azureBlobService.upload(imagen)
+        ]);
+      } catch (uploadError) {
+        throw new BadRequestException(`Error al subir archivos: ${uploadError.message}`);
+      }
+
+      // Validar que los nombres de archivo se obtuvieron correctamente
+      if (!videoName || !imagenName) {
+        throw new BadRequestException('Error al procesar los archivos subidos');
+      }
+
+      // Crear el diagnóstico con los nombres de los archivos (no los buffers)
       const diagnostico = await this.prisma.diagnostico.create({
         data: {
-          descripcion: createDiagnosticoDto.descripcion,
+          descripcion: createDiagnosticoDto.descripcion.replace(/\0/g, ''),
           edadGestacional: createDiagnosticoDto.edadGestacional,
-          enlaceFoto: imagenName, // Guardamos solo el nombre
-          enlaceVideo: videoName, // Guardamos solo el nombre
-          shareLink: createDiagnosticoDto.shareLink,
+          enlaceFoto: imagenName.replace(/\0/g, ''), // Asegurarse de que no hay espacios en blanco
+          enlaceVideo: videoName.replace(/\0/g, ''), // Asegurarse de que no hay espacios en blanco
           calificacion: createDiagnosticoDto.calificacion,
           medicoId: medicoId,
           pacienteId: createDiagnosticoDto.pacienteId,
@@ -78,10 +88,11 @@ export class DiagnosticoService {
         },
       });
 
-      
+      // Generar URLs seguras para acceder a los archivos
       const secureImageUrl = this.azureBlobService.generateSasUrl(imagenName);
       const secureVideoUrl = this.azureBlobService.generateSasUrl(videoName);
 
+      // Retornar el diagnóstico con las URLs seguras
       return {
         ...diagnostico,
         enlaceFoto: secureImageUrl,
@@ -89,8 +100,11 @@ export class DiagnosticoService {
         message: 'Diagnóstico creado exitosamente',
       };
     } catch (error) {
+      // Log del error para debugging
+      console.error('Error completo:', error);
+      
       throw new BadRequestException(
-        'Error al crear el diagnóstico: ' + error.message
+        'Error al crear el diagnóstico: ' + (error.message || 'Error desconocido')
       );
     }
   }

@@ -42,7 +42,7 @@ model Diagnostico {
   calificacion     Int?
   enlaceVideo      String    @db.VarChar(255)
   descripcion      String    @db.Text
-  edadGestacional  String    @db.VarChar(255)
+  edadGestacional  Int    
   // Relaciones
   medico           Usuario   @relation("DiagnosticoMedico", fields: [medicoId], references: [identificacion])
   medicoId         Int

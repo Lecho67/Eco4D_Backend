@@ -37,6 +37,7 @@ export class UsuariosController {
     @ApiOperation({ summary: 'Obtener lista de pacientes' })
     @ApiResponse({ status: 200, description: 'Lista de pacientes obtenida exitosamente.' })
     @ApiResponse({ status: 403, description: 'Acceso denegado.' })
+
     getPaciente() {
       return this.usuariosService.getPacientes();
     }
