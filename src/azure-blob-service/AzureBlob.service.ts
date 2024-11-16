@@ -24,11 +24,34 @@ export class AzureBlobService {
     const containerClient = blobClientService.getContainerClient(this.containerName);
     return containerClient.getBlockBlobClient(imageName);
   }
+  private sanitizeFileName(fileName: string): string {
+    // Remueve caracteres especiales y espacios, solo permite letras, números, guiones y puntos
+    let sanitized = fileName
+      .toLowerCase() // Convierte a minúsculas
+      .normalize('NFD') // Normaliza caracteres acentuados
+      .replace(/[\u0300-\u036f]/g, '') // Remueve diacríticos
+      .replace(/[^a-z0-9.-]/g, '-') // Reemplaza caracteres inválidos con guiones
+      .replace(/-+/g, '-') // Reemplaza múltiples guiones con uno solo
+      .replace(/^-+|-+$/g, ''); // Remueve guiones al inicio y final
 
+    // Asegura que el nombre del archivo no exceda 1024 caracteres (límite de Azure)
+    const timestamp = Date.now();
+    const extension = sanitized.split('.').pop() || '';
+    const nameWithoutExt = sanitized.replace(/\.[^/.]+$/, '');
+    
+    // Si el nombre es muy largo, lo trunca y agrega el timestamp
+    if (nameWithoutExt.length > 50) {
+      sanitized = `${nameWithoutExt.substring(0, 50)}-${timestamp}.${extension}`;
+    } else {
+      sanitized = `${nameWithoutExt}-${timestamp}.${extension}`;
+    }
+
+    return sanitized;
+  }
   async upload(file: Express.Multer.File): Promise<string> {
     let fileBuffer = file.buffer;
     let mimeType = file.mimetype;
-    let fileName = `${Date.now()}-${file.originalname}`;
+    let fileName = this.sanitizeFileName(file.originalname);
 
     // Si es un video, convertir a MP4
     if (mimeType.startsWith('video/')) {
