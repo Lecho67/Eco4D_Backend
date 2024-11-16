@@ -13,7 +13,7 @@ export class SoporteController {
   constructor(private readonly solicitudService: SoporteService) {}
 
   @Post()
-  @Roles(Role.Paciente)
+  @Roles(Role.Paciente,Role.Medico)
   @ApiOperation({ summary: 'Crear una nueva solicitud de soporte' })
   @ApiResponse({
     status: 201,
@@ -47,7 +47,7 @@ export class SoporteController {
   }
 
   @Get('mis-solicitudes')
-  @Roles(Role.Paciente)
+  @Roles(Role.Paciente,Role.Medico)
 
   @ApiOperation({ summary: 'Obtener solicitudes de soporte del paciente actual' })
   @ApiResponse({
