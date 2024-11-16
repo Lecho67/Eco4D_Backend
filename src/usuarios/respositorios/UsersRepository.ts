@@ -91,27 +91,62 @@ export class UserRepository {
     });
   }
 
-  async getMedicos(){
-    return this.prisma.usuario.findMany({
+  async getMedicos() {
+    const medicos = await this.prisma.usuario.findMany({
       where: {
-        rol: 'M'
-      }
-    })
+        rol: 'M', // Filtrar por rol de Médico
+      },
+      select: {
+        identificacion: true,
+        tipoIdentificacion: true,
+        nombre_completo: true,
+        correo_electronico: true,
+        rol: true,
+        pais: true,
+        ciudad: true,
+        fecha_nacimiento: true,
+      },
+    });
+  
+    return medicos;
   }
 
   async getPacientes(){
-    return this.prisma.usuario.findMany({
+    let paciente = this.prisma.usuario.findMany({
       where: {
         rol: 'P'
-      }
+      },
+      select: {
+        identificacion: true,
+        tipoIdentificacion: true,
+        nombre_completo: true,
+        correo_electronico: true,
+        rol: true,
+        pais: true,
+        ciudad: true,
+        fecha_nacimiento: true,
+      },
     })
+
+    return paciente
   }
 
   async getAdministradores(){
-    return this.prisma.usuario.findMany({
+    let administradores = this.prisma.usuario.findMany({
       where:{
         rol: 'A'
-      }
+      },
+      select: {
+        identificacion: true,
+        tipoIdentificacion: true,
+        nombre_completo: true,
+        correo_electronico: true,
+        rol: true,
+        pais: true,
+        ciudad: true,
+        fecha_nacimiento: true,
+      },
     })
+    return administradores
   }
 }
