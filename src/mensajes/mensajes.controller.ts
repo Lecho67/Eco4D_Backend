@@ -5,6 +5,7 @@ import { Role } from 'src/usuarios/roles/roles.enum';
 import { RolesGuard } from 'src/usuarios/roles/roles.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { MensajeDto } from './dto/mensaje.dto';
 @Controller('mensajes')
 export class MensajesController {
     constructor(private readonly mensajesService: MensajesService){}
@@ -32,7 +33,7 @@ export class MensajesController {
 
     @ApiParam({ name: 'solicitudId', type: 'number', description: 'ID de la solicitud de soporte' })
     @ApiOperation({ summary: 'Obtener mensajes de una solicitud de soporte' })
-    @ApiResponse({ status: 200, description: 'Mensajes obtenidos exitosamente.' })
+    @ApiResponse({ status: 200, description: 'Mensajes obtenidos exitosamente.', type: [MensajeDto] })
     @ApiResponse({ status: 403, description: 'No tienes permiso para ver los mensajes de esta solicitud.' })
     @UseGuards(AuthGuard,RolesGuard)
     @Roles(Role.Administrador,Role.Paciente,Role.Medico)

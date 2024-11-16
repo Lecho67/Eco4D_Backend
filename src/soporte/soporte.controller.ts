@@ -113,7 +113,7 @@ export class SoporteController {
   @Roles(Role.Administrador)
   @Put('fechaSolucion/:id')
   @ApiOperation({ summary: 'Añadir fecha de solución a la solicitud' })
-  @ApiParam({ name: 'id', description: 'ID de la solicitud a la que se añadirá la fecha de solución', type: Number })
+  @ApiParam({ name: 'solicitudId', description: 'ID de la solicitud a la que se añadirá la fecha de solución', type: Number })
   @ApiResponse({ status: 200, description: 'Fecha de solución añadida exitosamente a la solicitud.' })
   @ApiResponse({ status: 404, description: 'Solicitud no encontrada.' })
   @ApiResponse({ status: 403, description: 'Acceso denegado.' })
