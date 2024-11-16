@@ -9,7 +9,7 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class MensajesController {
     constructor(private readonly mensajesService: MensajesService){}
     @UseGuards(AuthGuard,RolesGuard)
-    @Roles(Role.Administrador,Role.Paciente)
+    @Roles(Role.Administrador,Role.Paciente,Role.Medico)
     @Post('/nuevo')
 
     @ApiOperation({ summary: 'Crear un nuevo mensaje en una solicitud de soporte' })
