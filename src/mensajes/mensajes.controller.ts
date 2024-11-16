@@ -8,7 +8,7 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 @Controller('mensajes')
 export class MensajesController {
     constructor(private readonly mensajesService: MensajesService){}
-    @UseGuards(RolesGuard,AuthGuard)
+    @UseGuards(AuthGuard,RolesGuard)
     @Roles(Role.Administrador,Role.Paciente)
     @Post('/nuevo')
 
