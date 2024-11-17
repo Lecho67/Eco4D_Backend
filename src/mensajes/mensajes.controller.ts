@@ -41,4 +41,10 @@ export class MensajesController {
     async obtenerMensajes(@Param('id', ParseIntPipe)  solicitudId: number , @Request() req){
         return await this.mensajesService.obtenerMensajes(solicitudId,req.user);
     }
+
+    @Get('/heartbeat')
+
+    async heartbeat(){
+        return "Estoy vivo mi gente";
+    }
 }
