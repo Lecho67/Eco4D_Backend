@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { Roles } from './roles/roles.decorator';
 import { Role } from './roles/roles.enum';
@@ -41,4 +41,13 @@ export class UsuariosController {
     getPaciente() {
       return this.usuariosService.getPacientes();
     }
+
+    @Get('')
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Obtener información de un usuario por ID' })
+    @ApiResponse({ status: 200, description: 'Información del usuario obtenida exitosamente.' })
+    getUserById(@Request() req) {
+      return this.usuariosService.getUserById(req.user.identificacion);
+    }
+
 }

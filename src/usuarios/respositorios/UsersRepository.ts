@@ -68,7 +68,23 @@ export class UserRepository {
 
   async findById(id: number) {
     return this.prisma.usuario.findUnique({
+      where: { identificacion: id }
+    });
+  }
+
+  async findByIdWhithoutPassword(id: number) {
+    return this.prisma.usuario.findUnique({
       where: { identificacion: id },
+      select: {
+        identificacion: true,
+        tipoIdentificacion: true,
+        nombre_completo: true,
+        correo_electronico: true,
+        rol: true,
+        pais: true,
+        ciudad: true,
+        fecha_nacimiento: true,
+      },
     });
   }
 

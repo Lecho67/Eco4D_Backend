@@ -15,4 +15,8 @@ export class UsuariosService {
     getAdministradores() {
         return this.repositorioUsuario.getAdministradores();
     }
+
+    getUserById(id: number) {
+        return this.repositorioUsuario.findByIdWhithoutPassword(id);
+    }
 }
