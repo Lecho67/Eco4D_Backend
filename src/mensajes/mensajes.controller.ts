@@ -43,7 +43,6 @@ export class MensajesController {
     }
 
     @Get('/heartbeat')
-
     async heartbeat(){
         return "Estoy vivo mi gente";
     }

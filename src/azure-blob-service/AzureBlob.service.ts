@@ -52,7 +52,7 @@ export class AzureBlobService {
     let fileBuffer = file.buffer;
     let mimeType = file.mimetype;
     let fileName = this.sanitizeFileName(file.originalname);
-
+    
     // Si es un video, convertir a MP4
     if (mimeType.startsWith('video/')) {
       const convertedVideo = await this.videoConverterService.convertToMp4(fileBuffer, mimeType);
