@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
-import { AzureBlobService } from 'src/azure-blob-service/AzureBlob.service';
+import { PrismaService } from '../prisma.service';
+import { AzureBlobService } from '../azure-blob-service/AzureBlob.service';
 import { CreateDiagnosticoDto } from './dto/create-diagnosticos.dto';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
