@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { BlobServiceClient, BlockBlobClient, generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } from '@azure/storage-blob';
 import { ConfigService } from '@nestjs/config';
-import { VideoConverterService } from 'src/video-converter/video-converter.service';
+import { VideoConverterService } from '../video-converter/video-converter.service';
 @Injectable()
 export class AzureBlobService {
   private readonly containerName: string;

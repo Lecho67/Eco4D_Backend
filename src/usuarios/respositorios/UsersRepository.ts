@@ -1,5 +1,5 @@
 import { Injectable, ConflictException,InternalServerErrorException} from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { Usuario } from '../interfaces/Usuario';
 import { CreateUserDto } from '../dto/createuser.dto';

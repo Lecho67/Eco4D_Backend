@@ -6,8 +6,8 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwtPayload';
-import { UserRepository } from 'src/usuarios/respositorios/UsersRepository';
-import { Usuario } from 'src/usuarios/interfaces/Usuario';
+import { UserRepository } from '../usuarios/respositorios/UsersRepository';
+import { Usuario } from '../usuarios/interfaces/Usuario';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 
 @Injectable()

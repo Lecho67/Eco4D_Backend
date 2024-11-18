@@ -1,117 +1,235 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { AuthService } from './auth.service';
-// import { UserRepository } from '../usuarios/respositorios/UsersRepository';
-// import { JwtService } from '@nestjs/jwt';
-// import { RefreshTokenRepository } from './repositories/refresh-token.repository';
-// import { UnauthorizedException } from '@nestjs/common';
-// import { RegisterDto } from './dto/register.dto';
-// import * as bcrypt from 'bcrypt';
-// import { Response } from 'express';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthService } from './auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { UserRepository } from '../usuarios/respositorios/UsersRepository';
+import { RefreshTokenRepository } from './repositories/refresh-token.repository';
+import { UnauthorizedException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
-// jest.mock('bcrypt');
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('mockedHash123'),
+  compare: jest.fn(),
+}));
 
-// describe('AuthService', () => {
-//   let authService: AuthService;
-//   let userRepository: UserRepository;
-//   let jwtService: JwtService;
-//   let refreshTokenRepository: RefreshTokenRepository;
-//   let response: Partial<Response>;
+describe('AuthService', () => {
+  let authService: AuthService;
+  let userRepository: UserRepository;
+  let jwtService: JwtService;
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         AuthService,
-//         {
-//           provide: UserRepository,
-//           useValue: {
-//             findByEmail: jest.fn(),
-//             create: jest.fn(),
-//             findById: jest.fn(),
-//           },
-//         },
-//         {
-//           provide: JwtService,
-//           useValue: {
-//             sign: jest.fn().mockReturnValue('fakeToken'),
-//             verifyAsync: jest.fn(),
-//           },
-//         },
-//         {
-//           provide: RefreshTokenRepository,
-//           useValue: {
-//             create: jest.fn(),
-//             findByUserId: jest.fn(),
-//             delete: jest.fn(),
-//           },
-//         },
-//       ],
-//     }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        {
+          provide: UserRepository,
+          useValue: {
+            findByEmail: jest.fn(),
+            create: jest.fn(),
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn().mockReturnValue('mockAccessToken'),
+          },
+        },
+        {
+          provide: RefreshTokenRepository,
+          useValue: {
+            create: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
 
-//     authService = module.get<AuthService>(AuthService);
-//     userRepository = module.get<UserRepository>(UserRepository);
-//     jwtService = module.get<JwtService>(JwtService);
-//     refreshTokenRepository = module.get<RefreshTokenRepository>(RefreshTokenRepository);
+    authService = module.get<AuthService>(AuthService);
+    userRepository = module.get<UserRepository>(UserRepository);
+    jwtService = module.get<JwtService>(JwtService);
+  });
 
-//     response = {
-//       cookie: jest.fn(),
-//       clearCookie: jest.fn(),
-//     };
+  // Pruebas de registro existentes
+  it('should register a new user successfully', async () => {
+    const mockRegisterDto = {
+      identificacion: 12345678,
+      tipoIdentificacion: 'CC',
+      nombre_completo: 'John Doe',
+      correo_electronico: 'johndoe@example.com',
+      contrasena: 'password123',
+      rol: 'P',
+      pais: 'Colombia',
+      ciudad: 'Bogotá',
+      fecha_nacimiento: new Date('1990-01-01'),
+    };
+    const mockResponse = {
+      cookie: jest.fn(),
+    } as any;
 
-//     jest.spyOn(bcrypt, 'hash').mockImplementation(async () => 'hashedPassword');
-//     jest.spyOn(bcrypt, 'compare').mockImplementation(async () => true);
-    
-//   });
+    const mockUser = { ...mockRegisterDto, contrasena: 'mockedHash123' };
 
-//   it('should register a new user', async () => {
-//     const registerDto: RegisterDto = {
-//       identificacion: 12345678,
-//       tipoIdentificacion: 'CC',
-//       nombre_completo: 'John Doe',
-//       correo_electronico: 'johndoe@example.com',
-//       contrasena: 'password123',
-//       rol: 'P',
-//       pais: 'Colombia',
-//       ciudad: 'Bogotá',
-//       fecha_nacimiento: new Date('1990-01-01'),
-//     };
+    jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(null);
+    jest.spyOn(userRepository, 'create').mockResolvedValue(mockUser);
 
-//     userRepository.findByEmail = jest.fn().mockResolvedValue(null);
-//     userRepository.create = jest.fn().mockResolvedValue({
-//       ...registerDto,
-//       identificacion: registerDto.identificacion,
-//     });
+    const result = await authService.register(mockRegisterDto, mockResponse);
 
-//     const result = await authService.register(registerDto, response as Response);
+    expect(userRepository.findByEmail).toHaveBeenCalledWith(
+      mockRegisterDto.correo_electronico,
+    );
+    expect(userRepository.create).toHaveBeenCalledWith({
+      ...mockRegisterDto,
+      contrasena: 'mockedHash123',
+    });
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(2);
+    expect(result).toEqual({
+      user: {
+        identificacion: mockRegisterDto.identificacion,
+        tipoIdentificacion: mockRegisterDto.tipoIdentificacion,
+        nombre_completo: mockRegisterDto.nombre_completo,
+        correo_electronico: mockRegisterDto.correo_electronico,
+        rol: mockRegisterDto.rol,
+        pais: mockRegisterDto.pais,
+        ciudad: mockRegisterDto.ciudad,
+        fecha_nacimiento: mockRegisterDto.fecha_nacimiento,
+      },
+    });
+  });
 
-//     expect(result.user).toMatchObject({
-//       identificacion: registerDto.identificacion,
-//       tipoIdentificacion: registerDto.tipoIdentificacion,
-//       nombre_completo: registerDto.nombre_completo,
-//       correo_electronico: registerDto.correo_electronico,
-//       rol: registerDto.rol,
-//       pais: registerDto.pais,
-//       ciudad: registerDto.ciudad,
-//       fecha_nacimiento: registerDto.fecha_nacimiento,
-//     });
-//     expect(response.cookie).toHaveBeenCalledWith('token', 'fakeToken', expect.any(Object));
-//     expect(response.cookie).toHaveBeenCalledWith('refreshToken', 'fakeToken', expect.any(Object));
-//   });
+  it('should throw an UnauthorizedException if user already exists during registration', async () => {
+    const mockRegisterDto = {
+      identificacion: 12345678,
+      tipoIdentificacion: 'CC',
+      nombre_completo: 'John Doe',
+      correo_electronico: 'johndoe@example.com',
+      contrasena: 'password123',
+      rol: 'P',
+      pais: 'Colombia',
+      ciudad: 'Bogotá',
+      fecha_nacimiento: new Date('1990-01-01'),
+    };
+    const mockResponse = {
+      cookie: jest.fn(),
+    } as any;
 
-//   it('should throw UnauthorizedException if user already exists', async () => {
-//     const registerDto: RegisterDto = {
-//       identificacion: 12345678,
-//       tipoIdentificacion: 'CC',
-//       nombre_completo: 'John Doe',
-//       correo_electronico: 'johndoe@example.com',
-//       contrasena: 'password123',
-//       rol: 'P',
-//       pais: 'Colombia',
-//       ciudad: 'Bogotá',
-//       fecha_nacimiento: new Date('1990-01-01'),
-//     };
+    jest.spyOn(userRepository, 'findByEmail').mockResolvedValue({
+      identificacion: 12345678,
+      tipoIdentificacion: 'CC',
+      nombre_completo: 'John Doe',
+      correo_electronico: mockRegisterDto.correo_electronico,
+      contrasena: 'hashedPassword123',
+      rol: 'P',
+      pais: 'Colombia',
+      ciudad: 'Cali',
+      fecha_nacimiento: new Date('1990-01-01'),
+    });
 
-//     userRepository.findByEmail = jest.fn().mockResolvedValue(registerDto);
+    await expect(
+      authService.register(mockRegisterDto, mockResponse),
+    ).rejects.toThrow(UnauthorizedException);
 
-//     await expect(authService.register(registerDto, response as Response)).rejects.toThrow(UnauthorizedException);
-//   });
-// });
+    expect(userRepository.findByEmail).toHaveBeenCalledWith(
+      mockRegisterDto.correo_electronico,
+    );
+    expect(userRepository.create).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).not.toHaveBeenCalled();
+  });
+
+  // Nuevas pruebas de login
+  describe('login', () => {
+    it('should login successfully with valid credentials', async () => {
+      const mockLoginDto = {
+        correo_electronico: 'johndoe@example.com',
+        contrasena: 'password123',
+      };
+
+      const mockUser = {
+        identificacion: 12345678,
+        tipoIdentificacion: 'CC',
+        nombre_completo: 'John Doe',
+        correo_electronico: 'johndoe@example.com',
+        contrasena: 'hashedPassword123',
+        rol: 'P',
+        pais: 'Colombia',
+        ciudad: 'Bogotá',
+        fecha_nacimiento: new Date('1990-01-01'),
+      };
+
+      const mockResponse = {
+        cookie: jest.fn(),
+      } as any;
+
+      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(mockUser);
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
+
+      const result = await authService.login(mockLoginDto, mockResponse);
+
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(mockLoginDto.correo_electronico);
+      expect(bcrypt.compare).toHaveBeenCalledWith(mockLoginDto.contrasena, mockUser.contrasena);
+      expect(mockResponse.cookie).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
+        user: {
+          identificacion: mockUser.identificacion,
+          tipoIdentificacion: mockUser.tipoIdentificacion,
+          nombre_completo: mockUser.nombre_completo,
+          correo_electronico: mockUser.correo_electronico,
+          rol: mockUser.rol,
+          pais: mockUser.pais,
+          ciudad: mockUser.ciudad,
+          fecha_nacimiento: mockUser.fecha_nacimiento,
+        },
+      });
+    });
+
+    it('should throw UnauthorizedException when user not found', async () => {
+      const mockLoginDto = {
+        correo_electronico: 'nonexistent@example.com',
+        contrasena: 'password123',
+      };
+
+      const mockResponse = {
+        cookie: jest.fn(),
+      } as any;
+
+      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(null);
+
+      await expect(
+        authService.login(mockLoginDto, mockResponse)
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(mockLoginDto.correo_electronico);
+      expect(mockResponse.cookie).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException when password is invalid', async () => {
+      const mockLoginDto = {
+        correo_electronico: 'johndoe@example.com',
+        contrasena: 'wrongpassword',
+      };
+
+      const mockUser = {
+        identificacion: 12345678,
+        tipoIdentificacion: 'CC',
+        nombre_completo: 'John Doe',
+        correo_electronico: 'johndoe@example.com',
+        contrasena: 'hashedPassword123',
+        rol: 'P',
+        pais: 'Colombia',
+        ciudad: 'Bogotá',
+        fecha_nacimiento: new Date('1990-01-01'),
+      };
+
+      const mockResponse = {
+        cookie: jest.fn(),
+      } as any;
+
+      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(mockUser);
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(false as never);
+
+      await expect(
+        authService.login(mockLoginDto, mockResponse)
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(mockLoginDto.correo_electronico);
+      expect(bcrypt.compare).toHaveBeenCalledWith(mockLoginDto.contrasena, mockUser.contrasena);
+      expect(mockResponse.cookie).not.toHaveBeenCalled();
+    });
+  });
+});
