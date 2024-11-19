@@ -7,7 +7,7 @@ export class AzureBlobService {
   private readonly containerName: string;
   private readonly accountName: string;
   private readonly accountKey: string;
-
+  private readonly imageContainerName: string;
   constructor(
     private readonly configService: ConfigService,
     private readonly videoConverterService: VideoConverterService
@@ -15,13 +15,14 @@ export class AzureBlobService {
     this.containerName = this.configService.get<string>('AZURE_STORAGE_CONTAINER_NAME');
     this.accountName = this.configService.get<string>('AZURE_STORAGE_ACCOUNT_NAME');
     this.accountKey = this.configService.get<string>('AZURE_STORAGE_ACCOUNT_KEY');
+    this.imageContainerName = this.configService.get<string>('AZURE_STORAGE_IMAGE_CONTAINER_NAME');
   }
 
-  private getBlobClient(imageName: string): BlockBlobClient {
+  private getBlobClient(imageName: string, containerName?: string): BlockBlobClient {
     const blobClientService = BlobServiceClient.fromConnectionString(
       this.configService.get<string>('AZURE_STORAGE_CONNECTION_STRING')
     );
-    const containerClient = blobClientService.getContainerClient(this.containerName);
+    const containerClient = blobClientService.getContainerClient(containerName || this.containerName);
     return containerClient.getBlockBlobClient(imageName);
   }
   private sanitizeFileName(fileName: string): string {
@@ -72,6 +73,22 @@ export class AzureBlobService {
     });
 
     return fileName;
+  }
+
+  async uploadImage(file: Express.Multer.File): Promise<string> {
+    const fileName = this.sanitizeFileName(file.originalname);
+    const blobClient = this.getBlobClient(fileName, this.imageContainerName);
+    const mimeType = file.mimetype;
+
+    if (!mimeType.startsWith('image/')) {
+      throw new ForbiddenException('El archivo no es una imagen');
+    }
+
+    await blobClient.uploadData(file.buffer,{
+      blobHTTPHeaders: { blobContentType: mimeType }
+    });
+
+    return blobClient.url;
   }
   generateSasUrl(blobName: string): string {
     const sharedKeyCredential = new StorageSharedKeyCredential(

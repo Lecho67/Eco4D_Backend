@@ -81,4 +81,8 @@ export class RegisterDto {
   @IsNotEmpty()
   @Type(()=>Date)
   fecha_nacimiento: Date;
+
+  @IsOptional()
+  @IsString()
+  url_foto_de_perfil?: string;
 }
