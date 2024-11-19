@@ -49,7 +49,7 @@ export class SoporteController {
   @Get('mis-solicitudes')
   @Roles(Role.Paciente,Role.Medico)
 
-  @ApiOperation({ summary: 'Obtener solicitudes de soporte del paciente o médicoactual' })
+  @ApiOperation({ summary: 'Obtener solicitudes de soporte del paciente o médico actual' })
   @ApiResponse({
     status: 200,
     description: 'Lista de solicitudes del paciente o médico',
