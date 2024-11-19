@@ -53,7 +53,8 @@ export class AuthService {
         rol: user.rol,
         pais: user.pais,
         ciudad: user.ciudad,
-        fecha_nacimiento: user.fecha_nacimiento
+        fecha_nacimiento: user.fecha_nacimiento,
+        url_foto_de_perfil: user.url_foto_de_perfil
       }
     };
   }
@@ -92,7 +93,8 @@ export class AuthService {
         rol: user.rol,
         pais: user.pais,
         ciudad: user.ciudad,
-        fecha_nacimiento: user.fecha_nacimiento
+        fecha_nacimiento: user.fecha_nacimiento,
+        url_foto_de_perfil: user.url_foto_de_perfil
       }
     };
   }

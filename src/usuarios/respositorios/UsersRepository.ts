@@ -1,12 +1,13 @@
-import { Injectable, ConflictException,InternalServerErrorException} from '@nestjs/common';
+import { Injectable, ConflictException,InternalServerErrorException, BadRequestException} from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { Usuario } from '../interfaces/Usuario';
 import { CreateUserDto } from '../dto/createuser.dto';
+import { AzureBlobService } from 'src/azure-blob-service/AzureBlob.service';
 
 @Injectable()
 export class UserRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private azureBlobService: AzureBlobService) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -164,5 +165,18 @@ export class UserRepository {
       },
     })
     return administradores
+  }
+
+
+  async añadirFoto(id: number, file: Express.Multer.File) {
+      const url = await this.azureBlobService.uploadImage(file);
+      await this.prisma.usuario.update({
+        where: { identificacion: id },
+        data: {
+          url_foto_de_perfil: url,
+        },
+      });
+
+    return url
   }
 }

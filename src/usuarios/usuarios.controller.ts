@@ -1,10 +1,11 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {  Controller, Get, Put, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { Roles } from './roles/roles.decorator';
 import { Role } from './roles/roles.enum';
 import { RolesGuard } from './roles/roles.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('usuarios')
 export class UsuariosController {
     constructor(private readonly usuariosService: UsuariosService){}
@@ -48,6 +49,16 @@ export class UsuariosController {
     @ApiResponse({ status: 200, description: 'Información del usuario obtenida exitosamente.' })
     getUserById(@Request() req) {
       return this.usuariosService.getUserById(req.user.identificacion);
+    }
+
+    @Put('/foto')
+    @UseGuards(AuthGuard, RolesGuard)
+    @UseInterceptors(FileInterceptor('file'))
+    @ApiOperation({ summary: 'Subir foto de perfil' })
+    @ApiResponse({ status: 200, description: 'Foto de perfil subida exitosamente.' })
+    @ApiResponse({ status: 403, description: 'Acceso denegado.' })
+    anadirFoto(@Request() req, @UploadedFile() file: Express.Multer.File) {
+      return this.usuariosService.añadirFoto(req.user.identificacion, file);
     }
 
 }

@@ -19,4 +19,8 @@ export class UsuariosService {
     getUserById(id: number) {
         return this.repositorioUsuario.findByIdWhithoutPassword(id);
     }
+
+    añadirFoto(id: number, file: Express.Multer.File) {
+        return this.repositorioUsuario.añadirFoto(id, file);
+    }
 }

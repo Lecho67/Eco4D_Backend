@@ -31,7 +31,8 @@ model Usuario {
   diagnosticosComoPaciente  Diagnostico[] @relation("DiagnosticoPaciente") 
   // Relaciones para mensajes
   mensajesEnviados     Mensaje[]    @relation("EnviaMensaje")
-  refreshToken         RefreshToken?       
+  refreshToken         RefreshToken?   
+  url_foto_de_perfil   String?    
 }
 
 model Diagnostico {
