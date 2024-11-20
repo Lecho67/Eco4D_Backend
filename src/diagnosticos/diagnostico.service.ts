@@ -290,4 +290,29 @@ export class DiagnosticoService {
       data: { calificacion },
     });
   }
+
+  @ApiOperation({ summary: 'Obtener diagnósticos de un usuario' })
+  @ApiParam({ name: 'userId', description: 'ID del usuario', type: Number })
+  @ApiResponse({ status: 200, description: 'Devuelve los diagnósticos del usuario.' })
+  
+  async obtenerDiagnosticosUsuario(userId: number){
+    const diagnosticos = await this.prisma.diagnostico.findMany({
+      where: {OR: [{ medicoId: userId }, { pacienteId: userId }] },
+      include: {
+        medico: {
+          select: {
+            nombre_completo: true,
+            correo_electronico: true,
+          },
+        },
+        paciente: {
+          select: {
+            nombre_completo: true,
+            correo_electronico: true,
+          },
+        },
+      },
+    });
+    return diagnosticos;
+  }
 }

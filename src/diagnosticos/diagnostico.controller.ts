@@ -322,4 +322,10 @@ import { ApiBody, ApiConsumes, ApiCookieAuth, ApiOperation, ApiParam, ApiRespons
   ){
     return this.diagnosticoService.calificarDiagnostico(id, calificacion, req.user.identificacion);
   }
+
+  @Get('/usuario/:id')
+  @Roles(Role.Administrador)
+  async getDiagnosticosByUser(@Param('id', ParseIntPipe) id: number) {
+    return this.diagnosticoService.obtenerDiagnosticosUsuario(id);
+  }
 }
