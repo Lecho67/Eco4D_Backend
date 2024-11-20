@@ -1,5 +1,5 @@
 // src/modules/solicitudes/services/solicitud.service.ts
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { SolicitudRepository } from './repository/solicitud.repository';
 import { CreateSolicitudDto } from './dto/create-solicitud.dto';
 
@@ -23,12 +23,20 @@ export class SoporteService {
     return this.solicitudRepository.findAllClosedSolicitudes();
   }
 
-  async getSolicitudById(id: number) {
+  async getSolicitudById(id: number, user: any) {
     const solicitud = await this.solicitudRepository.findById(id);
 
     if (!solicitud) {
       throw new BadRequestException('Solicitud no encontrada');
     }
+
+    const esAdministrador = user.rol === 'A';
+    const esSolicitante = solicitud.solicitanteId === user.identificacion;
+
+    if (!esAdministrador && !esSolicitante) {
+      throw new ForbiddenException('No tienes permiso para acceder a esta solicitud');
+    }
+    
     return solicitud;
   }
 

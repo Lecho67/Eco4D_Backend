@@ -124,7 +124,7 @@ export class SoporteController {
   async getClosedSolicitudes() {
     return this.solicitudService.getClosedSolicitudes();
   }
-  @Roles(Role.Administrador)
+  @Roles(Role.Administrador,Role.Medico,Role.Paciente)
   @Get(':id')
 
   @ApiOperation({ summary: 'Obtener solicitud por ID' })
@@ -132,8 +132,8 @@ export class SoporteController {
   @ApiResponse({ status: 200, description: 'Solicitud obtenida exitosamente.' })
   @ApiResponse({ status: 400, description: 'Solicitud no encontrada.' })
   @ApiResponse({ status: 403, description: 'Acceso denegado.' })
-  async getSolicitudById(@Param('id', ParseIntPipe) id: number) {
-    return this.solicitudService.getSolicitudById(id);
+  async getSolicitudById(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    return this.solicitudService.getSolicitudById(id,req.user);
   }
 
   @Roles(Role.Administrador)
