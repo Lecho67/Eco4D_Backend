@@ -1,4 +1,4 @@
-import {  Controller, Get, Put, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {  Controller, Get, Param, ParseIntPipe, Put, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { Roles } from './roles/roles.decorator';
 import { Role } from './roles/roles.enum';
@@ -47,10 +47,17 @@ export class UsuariosController {
     @UseGuards(AuthGuard, RolesGuard)
     @ApiOperation({ summary: 'Obtener información de un usuario por ID' })
     @ApiResponse({ status: 200, description: 'Información del usuario obtenida exitosamente.' })
-    getUserById(@Request() req) {
+    getCurrentUser(@Request() req) {
       return this.usuariosService.getUserById(req.user.identificacion);
     }
 
+    @Get('/:id')
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Obtener información de un usuario por ID' })
+    @ApiResponse({ status: 200, description: 'Información del usuario obtenida exitosamente.' })
+    getUserById(@Param('id',ParseIntPipe) id: number) {
+      return this.usuariosService.getUserById(id);
+    }
     @Put('/foto')
     @UseGuards(AuthGuard, RolesGuard)
     @UseInterceptors(FileInterceptor('file'))
