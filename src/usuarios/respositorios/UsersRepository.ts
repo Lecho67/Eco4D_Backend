@@ -96,11 +96,33 @@ export class UserRepository {
     });
   }
 
-  async update(id: number, data: Partial<Usuario>) {
-    return this.prisma.usuario.update({
+  async update(id: number, data: Partial<any>) {
+    const user = await this.prisma.usuario.update({
       where: { identificacion: id },
-      data,
+      
+      data:{
+        identificacion: data.identificacion,
+        tipoIdentificacion: data.tipoIdentificacion,
+        nombre_completo: data.nombre_completo,
+        correo_electronico: data.correo_electronico,
+        pais: data.pais,
+        ciudad: data.ciudad,
+        fecha_nacimiento: data.fecha_nacimiento,
+        url_foto_de_perfil: data.url_foto_de_perfil
+      },
     });
+
+    return {
+      identificacion: user.identificacion,
+      tipoIdentificacion: user.tipoIdentificacion,
+      nombre_completo: user.nombre_completo,
+      correo_electronico: user.correo_electronico,
+      rol: user.rol,
+      pais: user.pais,
+      ciudad: user.ciudad,
+      fecha_nacimiento: user.fecha_nacimiento,
+      url_foto_de_perfil: user.url_foto_de_perfil
+    }
   }
 
   async delete(id: number) {

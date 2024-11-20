@@ -1,4 +1,4 @@
-import {  Controller, Get, Param, ParseIntPipe, Put, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {  Body, Controller, Get, Param, ParseIntPipe, Put, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { Roles } from './roles/roles.decorator';
 import { Role } from './roles/roles.enum';
@@ -67,6 +67,15 @@ export class UsuariosController {
     @ApiResponse({ status: 403, description: 'Acceso denegado.' })
     anadirFoto(@Request() req, @UploadedFile() file: Express.Multer.File) {
       return this.usuariosService.añadirFoto(req.user.identificacion, file);
+    }
+
+    @Put('/perfil')
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Actualizar perfil' })
+    @ApiResponse({ status: 200, description: 'Perfil actualizado exitosamente.' })
+    @ApiResponse({ status: 403, description: 'Acceso denegado.' })
+    actualizarPerfil(@Body() updateUserDto: any) {
+      return this.usuariosService.update(updateUserDto.identificacion, updateUserDto);
     }
 
 }

@@ -23,4 +23,8 @@ export class UsuariosService {
     añadirFoto(id: number, file: Express.Multer.File) {
         return this.repositorioUsuario.añadirFoto(id, file);
     }
+
+    update(id: number, user: Partial<any>) {
+        return this.repositorioUsuario.update(id, user);
+    }
 }
