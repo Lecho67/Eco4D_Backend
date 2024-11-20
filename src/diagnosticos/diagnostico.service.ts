@@ -246,7 +246,7 @@ export class DiagnosticoService {
     }
 
     // Verificar acceso: solo el médico que lo creó o el paciente asociado pueden verlo
-    if (diagnostico.medicoId !== userId && diagnostico.pacienteId !== userId) {
+    if (diagnostico.medicoId !== userId && diagnostico.pacienteId !== userId && userRole !== 'A') {
       throw new ForbiddenException('No tiene acceso a este diagnóstico');
     }
 
@@ -270,12 +270,12 @@ export class DiagnosticoService {
     }
   }  
 
-  @ApiOperation({ summary: 'Calificar diagnóstico' })
-  @ApiParam({ name: 'id', description: 'ID del diagnóstico', type: Number })
-  @ApiParam({ name: 'calificacion', description: 'Calificación para el diagnóstico (1-5)', type: Number })
-  @ApiResponse({ status: 200, description: 'Diagnóstico calificado exitosamente.' })
-  @ApiResponse({ status: 404, description: 'Diagnóstico no encontrado.' })
-  @ApiResponse({ status: 403, description: 'Acceso denegado.' })
+  // @ApiOperation({ summary: 'Calificar diagnóstico' })
+  // @ApiParam({ name: 'id', description: 'ID del diagnóstico', type: Number })
+  // @ApiParam({ name: 'calificacion', description: 'Calificación para el diagnóstico (1-5)', type: Number })
+  // @ApiResponse({ status: 200, description: 'Diagnóstico calificado exitosamente.' })
+  // @ApiResponse({ status: 404, description: 'Diagnóstico no encontrado.' })
+  // @ApiResponse({ status: 403, description: 'Acceso denegado.' })
   async calificarDiagnostico(diagnosticoId: number, calificacion: number, userId: number) {
     const diagnostico = await this.prisma.diagnostico.findFirst({
       where:{ AND: [{ id: diagnosticoId }, { pacienteId: userId }] }

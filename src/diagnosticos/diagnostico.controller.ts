@@ -301,7 +301,7 @@ import { ApiBody, ApiConsumes, ApiCookieAuth, ApiOperation, ApiParam, ApiRespons
   @ApiResponse({ status: 403, description: 'El usuario no tiene acceso a este diagnóstico' })
   @ApiResponse({ status: 404, description: 'Diagnóstico no encontrado' })
   @Get(':id')
-  @Roles(Role.Medico, Role.Paciente)
+  @Roles(Role.Medico, Role.Paciente,Role.Administrador)
   async getDiagnostico(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
