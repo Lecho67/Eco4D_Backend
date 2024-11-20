@@ -98,6 +98,32 @@ export class SoporteController {
   async getOpenSolicitudes() {
     return this.solicitudService.getOpenSolicitudes();
   }
+
+
+
+  @Get('solicitudes-cerradas')
+  @Roles(Role.Administrador)
+  @ApiOperation({ summary: 'Obtener todas las solicitudes cerradas' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de solicitudes abiertas',
+    schema: {
+      example: [
+        {
+          id: 2,
+          titulo: 'Inconsistencia de datos',
+          tipo: 'inconsistencia de datos',
+          descripcion: 'Datos erróneos en el perfil del usuario',
+          fechaReporte: '2024-10-30T10:00:00Z',
+          solicitante: { nombre_completo: 'Maria López', correo_electronico: 'maria.lopez@example.com' },
+          estado: 'R',
+        }
+      ]
+    }
+  })
+  async getClosedSolicitudes() {
+    return this.solicitudService.getClosedSolicitudes();
+  }
   @Roles(Role.Administrador)
   @Get(':id')
 

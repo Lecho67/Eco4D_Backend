@@ -61,6 +61,26 @@ export class SolicitudRepository {
     });
   }
 
+
+  async findAllClosedSolicitudes() {
+    return this.prisma.solicitudSoporte.findMany({
+      where: {
+        estado: 'R'
+      },
+      include: {
+        solicitante: {
+          select: {
+            nombre_completo: true,
+            correo_electronico: true
+          }
+        }
+      },
+      orderBy: {
+        fechaReporte: 'asc'
+      }
+    });
+  }
+
   async findById(id: number) {
     return this.prisma.solicitudSoporte.findUnique({
       where: { id },

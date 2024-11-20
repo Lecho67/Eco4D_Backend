@@ -19,6 +19,10 @@ export class SoporteService {
     return this.solicitudRepository.findAllOpenSolicitudes();
   }
 
+  async getClosedSolicitudes() {
+    return this.solicitudRepository.findAllClosedSolicitudes();
+  }
+
   async getSolicitudById(id: number) {
     const solicitud = await this.solicitudRepository.findById(id);
 
