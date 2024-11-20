@@ -85,6 +85,7 @@ export class UserRepository {
         pais: true,
         ciudad: true,
         fecha_nacimiento: true,
+        url_foto_de_perfil:true 
       },
     });
   }
