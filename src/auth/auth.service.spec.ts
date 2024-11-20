@@ -47,7 +47,6 @@ describe('AuthService', () => {
     jwtService = module.get<JwtService>(JwtService);
   });
 
-  // Pruebas de registro existentes
   it('should register a new user successfully', async () => {
     const mockRegisterDto = {
       identificacion: 12345678,
@@ -59,6 +58,7 @@ describe('AuthService', () => {
       pais: 'Colombia',
       ciudad: 'Bogotá',
       fecha_nacimiento: new Date('1990-01-01'),
+      url_foto_de_perfil: null // Añadido con valor null
     };
     const mockResponse = {
       cookie: jest.fn(),
@@ -89,6 +89,7 @@ describe('AuthService', () => {
         pais: mockRegisterDto.pais,
         ciudad: mockRegisterDto.ciudad,
         fecha_nacimiento: mockRegisterDto.fecha_nacimiento,
+        url_foto_de_perfil: null // Añadido en el resultado esperado
       },
     });
   });
@@ -104,6 +105,7 @@ describe('AuthService', () => {
       pais: 'Colombia',
       ciudad: 'Bogotá',
       fecha_nacimiento: new Date('1990-01-01'),
+      url_foto_de_perfil: null // Añadido con valor null
     };
     const mockResponse = {
       cookie: jest.fn(),
@@ -119,6 +121,7 @@ describe('AuthService', () => {
       pais: 'Colombia',
       ciudad: 'Cali',
       fecha_nacimiento: new Date('1990-01-01'),
+      url_foto_de_perfil: null // Añadido con valor null
     });
 
     await expect(
@@ -132,7 +135,6 @@ describe('AuthService', () => {
     expect(mockResponse.cookie).not.toHaveBeenCalled();
   });
 
-  // Nuevas pruebas de login
   describe('login', () => {
     it('should login successfully with valid credentials', async () => {
       const mockLoginDto = {
@@ -150,6 +152,7 @@ describe('AuthService', () => {
         pais: 'Colombia',
         ciudad: 'Bogotá',
         fecha_nacimiento: new Date('1990-01-01'),
+        url_foto_de_perfil: null // Añadido con valor null
       };
 
       const mockResponse = {
@@ -174,6 +177,7 @@ describe('AuthService', () => {
           pais: mockUser.pais,
           ciudad: mockUser.ciudad,
           fecha_nacimiento: mockUser.fecha_nacimiento,
+          url_foto_de_perfil: null // Añadido en el resultado esperado
         },
       });
     });
@@ -214,6 +218,7 @@ describe('AuthService', () => {
         pais: 'Colombia',
         ciudad: 'Bogotá',
         fecha_nacimiento: new Date('1990-01-01'),
+        url_foto_de_perfil: null // Añadido con valor null
       };
 
       const mockResponse = {

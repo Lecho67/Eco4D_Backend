@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { Usuario } from '../interfaces/Usuario';
 import { CreateUserDto } from '../dto/createuser.dto';
-import { AzureBlobService } from 'src/azure-blob-service/AzureBlob.service';
+import { AzureBlobService } from '../../azure-blob-service/AzureBlob.service';
 
 @Injectable()
 export class UserRepository {
