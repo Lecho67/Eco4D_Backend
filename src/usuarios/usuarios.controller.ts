@@ -53,6 +53,7 @@ export class UsuariosController {
 
     @Get('/:id')
     @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.Administrador)
     @ApiOperation({ summary: 'Obtener información de un usuario por ID' })
     @ApiResponse({ status: 200, description: 'Información del usuario obtenida exitosamente.' })
     getUserById(@Param('id',ParseIntPipe) id: number) {
